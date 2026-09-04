@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripPilot - Your trip. Continuously optimised.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { DEFAULT: '#0a0f0e', lighter: '#111815', card: '#0d1211' },
+            emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #0a0f0e; color: white; -webkit-font-smoothing: antialiased; }
+    .gradient-overlay { background: linear-gradient(to bottom, rgba(10,15,14,0.3), rgba(10,15,14,0.5), #0a0f0e); }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .animate-fade-up { animation: fadeUp 0.8s ease-out forwards; opacity: 0; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(30px); } }
+    .glass { background: rgba(10,15,14,0.8); backdrop-filter: blur(12px); }
+    .card-hover:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-2px); }
+    .progress-bar { transition: width 1.5s ease-out; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="compass" class="w-7 h-7 text-emerald-400"></i>
+        <span class="text-xl font-semibold tracking-tight">TripPilot</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+        <a href="#destinations" class="hover:text-white transition">Destinations</a>
+        <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
+        <a href="#features" class="hover:text-white transition">Features</a>
+      </div>
+      <div class="hidden md:flex items-center gap-4">
+        <button class="text-sm text-gray-400 hover:text-white transition">Sign In</button>
+        <button class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-5 py-2.5 rounded-full text-sm transition">Plan a Trip</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="relative h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1920&q=80" alt="Chinese landscape" class="w-full h-full object-cover opacity-40">
+      <div class="absolute inset-0 gradient-overlay"></div>
+    </div>
+    <div class="relative z-10 text-center px-6 max-w-4xl animate-fade-up">
+      <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">AI-Powered Travel</p>
+      <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6">
+        Your trip.<br><span class="text-emerald-400">Continuously optimised.</span>
+      </h1>
+      <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        Not just an itinerary. A real-time travel decision engine that adapts to weather, crowds, and your preferences.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8 py-4 rounded-full text-lg transition flex items-center justify-center gap-2">
+          <i data-lucide="sparkles" class="w-5 h-5"></i> Plan a New Trip
+        </button>
+        <button class="border border-white/20 hover:border-white/40 text-white font-medium px-8 py-4 rounded-full text-lg transition">See How It Works</button>
+      </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-500 text-sm">Scroll to explore</div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-16 border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center"><p class="text-3xl md:text-4xl font-bold text-emerald-400">16+</p><p class="text-sm text-gray-400 mt-1">Cities Covered</p></div>
+        <div class="text-center"><p class="text-3xl md:text-4xl font-bold text-emerald-400">500+</p><p class="text-sm text-gray-400 mt-1">Curated Activities</p></div>
+        <div class="text-center"><p class="text-3xl md:text-4xl font-bold text-emerald-400">24/7</p><p class="text-sm text-gray-400 mt-1">Real-time Monitoring</p></div>
+        <div class="text-center"><p class="text-3xl md:text-4xl font-bold text-emerald-400">92%</p><p class="text-sm text-gray-400 mt-1">Trip Satisfaction</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Differentiation -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">The Difference</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Not what to do.<br>What to do <span class="text-emerald-400">right now</span>.</h2>
+          <p class="text-gray-400 text-lg mb-8">Most travel sites tell you the best things to do in Chengdu. TripPilot tells you what your family should actually do today, given the weather, crowds, and where you already are.</p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span class="text-gray-300">Given that you are in Chengdu on Saturday 12 December</span></div>
+            <div class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span class="text-gray-300">Travelling with three children, prefer relaxed mornings</span></div>
+            <div class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span class="text-gray-300">Rain forecast for Monday, restaurant booking tonight</span></div>
+            <div class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"></i><span class="text-gray-300">What should your family actually do today?</span></div>
+          </div>
+        </div>
+        <div class="bg-dark-lighter rounded-3xl p-8 border border-white/5">
+          <div class="flex items-center gap-2 mb-6">
+            <i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-400"></i>
+            <span class="text-sm font-medium">TripPilot Live Plan</span>
+            <span class="ml-auto text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">Live</span>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl">
+              <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center"><i data-lucide="map-pin" class="w-5 h-5 text-emerald-400"></i></div>
+              <div><p class="font-medium">Chengdu, China</p><p class="text-sm text-gray-400">Saturday, 12 December · 11°C</p></div>
+            </div>
+            <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl">
+              <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center"><i data-lucide="cloud-rain" class="w-5 h-5 text-blue-400"></i></div>
+              <div><p class="font-medium">Rain Probability: 10%</p><p class="text-sm text-gray-400">Crowd Level: Moderate · Sunset: 5:58pm</p></div>
+            </div>
+            <div class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+              <div class="flex items-center justify-between mb-3"><span class="text-sm font-medium text-emerald-400">Trip Score</span><span class="text-2xl font-bold text-emerald-400">92/100</span></div>
+              <div class="grid grid-cols-2 gap-2 text-xs text-gray-400"><span>Weather: Excellent</span><span>Crowds: Moderate</span><span>Efficiency: High</span><span>Energy: Good</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Demo: Today View -->
+  <section id="demo" class="py-24 bg-dark-card">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Live Demo</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Your Day, Optimised</h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">See how TripPilot structures your day based on real-world conditions.</p>
+      </div>
+      <div class="max-w-2xl mx-auto bg-dark-lighter rounded-3xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5">
+          <div class="flex gap-4 mb-4">
+            <button onclick="switchTab('today')" id="tab-today" class="px-4 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black">Today's Plan</button>
+            <button onclick="switchTab('why')" id="tab-why" class="px-4 py-2 rounded-full text-sm font-medium transition bg-white/5 text-gray-400 hover:text-white">Why This Plan?</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm text-gray-400">Good Morning</p><p class="text-xl font-semibold">Chengdu · Saturday, 12 Dec</p></div>
+            <div class="text-right"><p class="text-2xl font-bold">11°C</p><p class="text-xs text-gray-400">Rain: 10% · Sunset: 5:58pm</p></div>
+          </div>
+        </div>
+        <div id="panel-today" class="p-6 space-y-4">
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="utensils" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Breakfast near hotel</p><p class="text-sm text-gray-400">9:45</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="palmtree" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">People's Park</p><p class="text-sm text-gray-400">11:00</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="utensils" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Lunch</p><p class="text-sm text-gray-400">12:45</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="building-2" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Taikoo Li + IFS</p><p class="text-sm text-gray-400">2:00</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="hotel" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Hotel rest</p><p class="text-sm text-gray-400">4:30</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="utensils" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Hotpot dinner</p><p class="text-sm text-gray-400">7:00</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+          <div class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0"><i data-lucide="mountain" class="w-4 h-4 text-emerald-400"></i></div><div class="flex-1"><p class="font-medium">Jinli Ancient Street</p><p class="text-sm text-gray-400">8:30</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></div>
+        </div>
+        <div id="panel-why" class="p-6 space-y-4 hidden">
+          <div class="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20"><p class="font-medium text-blue-400 mb-2">Why today?</p><p class="text-sm text-gray-300">TripPilot moved the Panda Base to Monday because today is Saturday (busier), Monday is predicted to be quieter, and pandas are more active earlier in the day.</p></div>
+          <div class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20"><p class="font-medium text-emerald-400 mb-2">Geographic Optimisation</p><p class="text-sm text-gray-300">Today's central Chengdu attractions are grouped together to minimize travel time between locations.</p></div>
+          <div class="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20"><p class="font-medium text-amber-400 mb-2">Weather Adaptation</p><p class="text-sm text-gray-300">Low rain probability today makes it ideal for outdoor activities like People's Park.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Features</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-4">Real-Time Travel Intelligence</h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">TripPilot combines weather, crowds, location, and personal preferences into one powerful decision engine.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="p-8 bg-dark-lighter rounded-2xl border border-white/5 card-hover transition duration-300"><i data-lucide="brain-circuit" class="w-10 h-10 text-emerald-400 mb-4"></i><h3 class="text-xl font-semibold mb-2">AI-Powered Planning</h3><p class="text-gray-400">Not static itineraries. Real-time decisions based on weather, crowds, and your preferences.</p></div>
+        <div class="p-8 bg-dark-lighter rounded-2xl border border-white/5 card-hover transition duration-300"><i data-lucide="cloud-rain" class="w-10 h-10 text-emerald-400 mb-4"></i><h3 class="text-xl font-semibold mb-2">Weather Intelligence</h3><p class="text-gray-400">Automatic replanning when conditions change. Rain? We move your outdoor activities indoors.</p></div>
+        <div class="p-8 bg-dark-lighter rounded-2xl border border-white/5 card-hover transition duration-300"><i data-lucide="star" class="w-10 h-10 text-emerald-400 mb-4"></i><h3 class="text-xl font-semibold mb-2">Crowd Forecasting</h3><p class="text-gray-400">Know before you go. We predict crowd levels by hour so you hit attractions at the perfect time.</p></div>
+        <div class="p-8 bg-dark-lighter rounded-2xl border border-white/5 card-hover transition duration-300"><i data-lucide="users" class="w-10 h-10 text-emerald-400 mb-4"></i><h3 class="text-xl font-semibold mb-2">Group Profiles</h3><p class="text-gray-400">Traveling with kids, parents, or friends? Every recommendation considers the whole group.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Weather Intelligence -->
+  <section class="py-24 bg-dark-card">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Weather Engine</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Weather Changes.<br>So Does Your Plan.</h2>
+          <p class="text-gray-400 text-lg mb-8">TripPilot tracks temperature, precipitation, wind, visibility, and air quality to automatically adjust your itinerary.</p>
+          <button onclick="toggleWeather()" class="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-2"><span id="weather-btn-text">Show</span> weather factors <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+        </div>
+        <div class="bg-dark-lighter rounded-3xl p-8 border border-white/5">
+          <div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><i data-lucide="umbrella" class="w-6 h-6 text-blue-400"></i><span class="font-medium">Weather Alert</span></div><span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">Active</span></div>
+          <div class="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 mb-4"><p class="text-sm text-blue-400 font-medium mb-1">Forecast Change Detected</p><p class="text-sm text-gray-300">Heavy rain expected Monday. Mount Qingcheng may no longer be ideal.</p></div>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 p-3 bg-white/5 rounded-lg"><div class="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs font-bold text-emerald-400">M</div><div class="flex-1"><p class="text-sm font-medium">Indoor Chengdu Activities</p><p class="text-xs text-gray-400">Recommended · Museums, shopping</p></div></div>
+            <div class="flex items-center gap-3 p-3 bg-white/5 rounded-lg"><div class="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center text-xs font-bold text-emerald-400">T</div><div class="flex-1"><p class="text-sm font-medium">Mount Qingcheng</p><p class="text-xs text-gray-400">Moved from Monday · Clear weather</p></div></div>
+          </div>
+          <button class="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-black font-medium py-3 rounded-xl transition">Swap Days</button>
+        </div>
+      </div>
+      <div id="weather-detail" class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5"><i data-lucide="thermometer" class="w-6 h-6 text-emerald-400 mb-3"></i><p class="text-sm text-gray-400">Temperature</p><p class="text-2xl font-bold mt-1">11°C</p><p class="text-xs text-gray-500 mt-1">Feels like 9°C</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5"><i data-lucide="droplets" class="w-6 h-6 text-emerald-400 mb-3"></i><p class="text-sm text-gray-400">Precipitation</p><p class="text-2xl font-bold mt-1">10%</p><p class="text-xs text-gray-500 mt-1">Light rain possible</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5"><i data-lucide="wind" class="w-6 h-6 text-emerald-400 mb-3"></i><p class="text-sm text-gray-400">Wind</p><p class="text-2xl font-bold mt-1">12 km/h</p><p class="text-xs text-gray-500 mt-1">Gentle breeze</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5"><i data-lucide="eye" class="w-6 h-6 text-emerald-400 mb-3"></i><p class="text-sm text-gray-400">Visibility</p><p class="text-2xl font-bold mt-1">10 km</p><p class="text-xs text-gray-500 mt-1">Clear conditions</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Destinations -->
+  <section id="destinations" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-end justify-between mb-12">
+        <div><p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Destinations</p><h2 class="text-4xl md:text-5xl font-bold">Explore China</h2></div>
+        <button class="hidden md:flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition">View All <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80" alt="Beijing" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Beijing</p><p class="text-sm text-gray-300">120+ activities</p></div></div>
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1548919973-5cef591cdbc9?w=600&q=80" alt="Shanghai" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Shanghai</p><p class="text-sm text-gray-300">98+ activities</p></div></div>
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=600&q=80" alt="Chengdu" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Chengdu</p><p class="text-sm text-gray-300">76+ activities</p></div></div>
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=600&q=80" alt="Guilin" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Guilin</p><p class="text-sm text-gray-300">54+ activities</p></div></div>
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?w=600&q=80" alt="Xi'an" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Xi'an</p><p class="text-sm text-gray-300">62+ activities</p></div></div>
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"><img src="https://images.unsplash.com/photo-1566220386734-7f8c6a5563c5?w=600&q=80" alt="Hangzhou" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 p-6"><p class="text-2xl font-bold">Hangzhou</p><p class="text-sm text-gray-300">45+ activities</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="py-24 bg-dark-card">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16"><p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Process</p><h2 class="text-4xl md:text-5xl font-bold mb-4">How TripPilot Works</h2><p class="text-gray-400 text-lg max-w-2xl mx-auto">From planning to traveling, TripPilot is with you every step.</p></div>
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="relative"><span class="text-6xl font-bold text-emerald-500/20">01</span><h3 class="text-xl font-semibold mt-4 mb-2">Tell us your trip</h3><p class="text-gray-400 text-sm">Destination, dates, and who is traveling.</p><div class="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div></div>
+        <div class="relative"><span class="text-6xl font-bold text-emerald-500/20">02</span><h3 class="text-xl font-semibold mt-4 mb-2">Set your style</h3><p class="text-gray-400 text-sm">Pace, budget, interests, and mobility needs.</p><div class="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div></div>
+        <div class="relative"><span class="text-6xl font-bold text-emerald-500/20">03</span><h3 class="text-xl font-semibold mt-4 mb-2">Get smart recommendations</h3><p class="text-gray-400 text-sm">AI generates a plan optimized for weather, crowds, and location.</p><div class="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div></div>
+        <div class="relative"><span class="text-6xl font-bold text-emerald-500/20">04</span><h3 class="text-xl font-semibold mt-4 mb-2">Travel with confidence</h3><p class="text-gray-400 text-sm">Real-time replanning and explanations for every change.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Suitability Score -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="text-emerald-400 text-sm tracking-widest uppercase mb-4">Scoring</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Every Activity.<br>Scored for You.</h2>
+          <p class="text-gray-400 text-lg mb-8">TripPilot assigns every activity a suitability score based on dozens of real-time factors.</p>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4"><span class="text-sm text-gray-400 w-36">Weather compatibility</span><div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:91%"></div></div><span class="text-sm text-emerald-400 w-12 text-right">91</span></div>
+            <div class="flex items-center gap-4"><span class="text-sm text-gray-400 w-36">Predicted crowd</span><div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:68%"></div></div><span class="text-sm text-emerald-400 w-12 text-right">68</span></div>
+            <div class="flex items-center gap-4"><span class="text-sm text-gray-400 w-36">User preference</span><div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:92%"></div></div><span class="text-sm text-emerald-400 w-12 text-right">92</span></div>
+            <div class="flex items-center gap-4"><span class="text-sm text-gray-400 w-36">Location efficiency</span><div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:73%"></div></div><span class="text-sm text-emerald-400 w-12 text-right">73</span></div>
+            <div class="flex items-center gap-4"><span class="text-sm text-gray-400 w-36">Season suitability</span><div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full progress-bar" style="width:84%"></div></div><span class="text-sm text-emerald-400 w-12 text-right">84</span></div>
+          </div>
+        </div>
+        <div class="bg-dark-lighter rounded-3xl p-8 border border-white/5">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center"><i data-lucide="camera" class="w-8 h-8 text-emerald-400"></i></div>
+            <div><h3 class="text-xl font-semibold">Chengdu Panda Base</h3><div class="flex items-center gap-1"><i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i><span class="text-sm">4.8</span></div></div>
+            <div class="ml-auto text-center"><p class="text-3xl font-bold text-emerald-400">84</p><p class="text-xs text-gray-400">/100</p></div>
+          </div>
+          <div class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 mb-4"><p class="text-sm font-medium text-emerald-400 mb-2">Best Time During Your Trip</p><p class="text-lg font-semibold">Monday 14 Dec · 8:30am arrival</p><p class="text-sm text-gray-400">Predicted crowd: Low · Weather: Clear</p></div>
+          <div class="space-y-2"><p class="text-sm text-gray-400">Why you'll like it:</p><div class="flex flex-wrap gap-2"><span class="text-xs bg-white/5 px-3 py-1 rounded-full">Wildlife</span><span class="text-xs bg-white/5 px-3 py-1 rounded-full">Family activity</span><span class="text-xs bg-white/5 px-3 py-1 rounded-full">Unique to Chengdu</span><span class="text-xs bg-white/5 px-3 py-1 rounded-full">Photography</span><span class="text-xs bg-white/5 px-3 py-1 rounded-full">Children friendly</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-24 bg-dark-card">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-4xl md:text-6xl font-bold mb-6">Ready to travel smarter?</h2>
+      <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">Join the future of travel planning. TripPilot continuously optimises your trip so you don't have to worry about the details.</p>
+      <button class="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-10 py-5 rounded-full text-lg transition inline-flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> Start Planning Your Trip</button>
+      <p class="text-sm text-gray-500 mt-4">Free to start. No credit card required.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-16 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-12">
+        <div><div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-6 h-6 text-emerald-400"></i><span class="text-lg font-semibold">TripPilot</span></div><p class="text-sm text-gray-400">Your trip. Continuously optimised.</p></div>
+        <div><p class="font-medium mb-4">Product</p><div class="space-y-2 text-sm text-gray-400"><a href="#" class="block hover:text-white transition">Features</a><a href="#" class="block hover:text-white transition">Destinations</a><a href="#" class="block hover:text-white transition">Pricing</a></div></div>
+        <div><p class="font-medium mb-4">Company</p><div class="space-y-2 text-sm text-gray-400"><a href="#" class="block hover:text-white transition">About</a><a href="#" class="block hover:text-white transition">Blog</a><a href="#" class="block hover:text-white transition">Contact</a></div></div>
+        <div><p class="font-medium mb-4">Legal</p><div class="space-y-2 text-sm text-gray-400"><a href="#" class="block hover:text-white transition">Privacy</a><a href="#" class="block hover:text-white transition">Terms</a></div></div>
+      </div>
+      <div class="mt-12 pt-8 border-t border-white/5 text-center text-sm text-gray-500">© 2026 TripPilot. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+    
+    function switchTab(tab) {
+      document.getElementById('panel-today').classList.toggle('hidden', tab !== 'today');
+      document.getElementById('panel-why').classList.toggle('hidden', tab !== 'why');
+      document.getElementById('tab-today').className = tab === 'today' ? 'px-4 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' : 'px-4 py-2 rounded-full text-sm font-medium transition bg-white/5 text-gray-400 hover:text-white';
+      document.getElementById('tab-why').className = tab === 'why' ? 'px-4 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' : 'px-4 py-2 rounded-full text-sm font-medium transition bg-white/5 text-gray-400 hover:text-white';
+    }
+    
+    function toggleWeather() {
+      const el = document.getElementById('weather-detail');
+      el.classList.toggle('hidden');
+      document.getElementById('weather-btn-text').textContent = el.classList.contains('hidden') ? 'Show' : 'Hide';
+    }
+    
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-up');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
