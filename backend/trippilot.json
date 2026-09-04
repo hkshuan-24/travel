@@ -1,0 +1,185 @@
+{
+  "users": [
+    {
+      "id": "25b32394-2abe-451b-a91e-8ad8573fead2",
+      "email": "test@example.com",
+      "password": "$2a$10$g4SEvv1ieKfVg8kh73/Y6eRpn7kLAKCRnWtR5l4Y0ccNLSgf5ryBe",
+      "name": "Test User",
+      "created_at": "2026-09-04T08:05:07.244Z"
+    }
+  ],
+  "trips": [],
+  "itinerary": [],
+  "activities": [
+    {
+      "id": "66336214-515d-4dba-939c-edc444a83cc6",
+      "name": "Chengdu Panda Base",
+      "name_local": "成都大熊猫繁育研究基地",
+      "city": "Chengdu",
+      "category": "Wildlife",
+      "description": "See giant pandas up close",
+      "duration": "3h",
+      "price": "$10",
+      "best_time": "8:00am",
+      "weather_sensitivity": "Low",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 9,
+      "tags": "wildlife,family,photo"
+    },
+    {
+      "id": "b9bdf563-2d28-4abe-b67d-5af0fc8d5218",
+      "name": "Jinli Ancient Street",
+      "name_local": "锦里古街",
+      "city": "Chengdu",
+      "category": "Culture",
+      "description": "Traditional street food and crafts",
+      "duration": "2h",
+      "price": "Free",
+      "best_time": "Evening",
+      "weather_sensitivity": "Low",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 7,
+      "tags": "culture,food,shopping"
+    },
+    {
+      "id": "0a8fb286-6210-4fbb-b908-f8f877e13b1f",
+      "name": "People's Park",
+      "name_local": "人民公园",
+      "city": "Chengdu",
+      "category": "Nature",
+      "description": "Tea houses and local life",
+      "duration": "2h",
+      "price": "Free",
+      "best_time": "Morning",
+      "weather_sensitivity": "Medium",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 6,
+      "tags": "nature,tea,relax"
+    },
+    {
+      "id": "93ed520a-7f30-4c71-981e-bea3b5e23e62",
+      "name": "Mount Qingcheng",
+      "name_local": "青城山",
+      "city": "Chengdu",
+      "category": "Nature",
+      "description": "Taoist mountain temples",
+      "duration": "6h",
+      "price": "$15",
+      "best_time": "8:00am",
+      "weather_sensitivity": "High",
+      "difficulty": "Moderate",
+      "family": 0,
+      "teen": 1,
+      "photo": 8,
+      "tags": "nature,hiking,temples"
+    },
+    {
+      "id": "94c4f364-32cb-4acb-ad36-99aa7278cbf0",
+      "name": "Taikoo Li",
+      "name_local": "太古里",
+      "city": "Chengdu",
+      "category": "Shopping",
+      "description": "Luxury shopping district",
+      "duration": "3h",
+      "price": "Free",
+      "best_time": "Afternoon",
+      "weather_sensitivity": "Low",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 7,
+      "tags": "shopping,modern,food"
+    },
+    {
+      "id": "35ec1c86-6367-40ed-87ff-64b5b18db6eb",
+      "name": "Forbidden City",
+      "name_local": "故宫",
+      "city": "Beijing",
+      "category": "History",
+      "description": "Imperial palace complex",
+      "duration": "4h",
+      "price": "$8",
+      "best_time": "8:30am",
+      "weather_sensitivity": "Low",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 9,
+      "tags": "history,architecture,unesco"
+    },
+    {
+      "id": "ee43359a-0e7c-4f74-9854-7f5b56abc797",
+      "name": "Great Wall",
+      "name_local": "长城",
+      "city": "Beijing",
+      "category": "History",
+      "description": "Ancient defensive wall",
+      "duration": "5h",
+      "price": "$12",
+      "best_time": "8:00am",
+      "weather_sensitivity": "High",
+      "difficulty": "Moderate",
+      "family": 1,
+      "teen": 1,
+      "photo": 10,
+      "tags": "history,scenic,hiking"
+    },
+    {
+      "id": "dfa4ea92-5667-4353-9163-86bc56bbcf43",
+      "name": "The Bund",
+      "name_local": "外滩",
+      "city": "Shanghai",
+      "category": "Landmark",
+      "description": "Historic waterfront",
+      "duration": "2h",
+      "price": "Free",
+      "best_time": "Sunset",
+      "weather_sensitivity": "Medium",
+      "difficulty": "Easy",
+      "family": 1,
+      "teen": 1,
+      "photo": 9,
+      "tags": "views,architecture,night"
+    }
+  ],
+  "weather": [
+    {
+      "id": "989c5fd8-caac-434f-96a6-61465bb80980",
+      "city": "Chengdu",
+      "date": "2026-09-04",
+      "temperature": 21,
+      "feels_like": 14,
+      "precipitation": 9,
+      "wind_speed": 7,
+      "humidity": 78,
+      "visibility": 16,
+      "condition": "Clear",
+      "forecast": [
+        {
+          "day": "Tomorrow",
+          "temp": 12,
+          "condition": "Partly Cloudy",
+          "rain": 10
+        },
+        {
+          "day": "+2 days",
+          "temp": 10,
+          "condition": "Light Rain",
+          "rain": 70
+        },
+        {
+          "day": "+3 days",
+          "temp": 14,
+          "condition": "Clear",
+          "rain": 5
+        }
+      ]
+    }
+  ]
+}
