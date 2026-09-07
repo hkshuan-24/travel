@@ -4,16 +4,15 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const path = require('path');
 const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'trippilot-dev-secret';
+const FRONTEND_URL = process.env.FRONTEND_URL || '*';
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: FRONTEND_URL }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..')));
 
 function auth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -25,6 +24,194 @@ function auth(req, res, next) {
     res.status(401).json({ error: 'Invalid token' });
   }
 }
+
+// ─── WEB UI ROUTES ─────────────────────────────────
+
+// Login / Admin portal page
+app.get('/', (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripPilot Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>body{font-family:Inter,sans-serif;background:#0a0f0e;color:#fff;}</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+      </div>
+      <h1 class="text-2xl font-bold">TripPilot Admin</h1>
+      <p class="text-gray-400 text-sm mt-1">Sign in to manage your travel platform</p>
+    </div>
+
+    <div id="login-panel" class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+      <div class="flex bg-white/5 rounded-full p-1">
+        <button onclick="switchTab('signin')" id="tab-signin" class="flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black">Sign In</button>
+        <button onclick="switchTab('signup')" id="tab-signup" class="flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white">Create Account</button>
+      </div>
+
+      <form id="form-signin" class="space-y-4" onsubmit="handleSignIn(event)">
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Email</label>
+          <input type="email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="admin@trippilot.com">
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Password</label>
+          <input type="password" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="••••••••">
+        </div>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Sign In</button>
+      </form>
+
+      <form id="form-signup" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Full Name</label>
+          <input type="text" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="John Doe">
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Email</label>
+          <input type="email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="admin@trippilot.com">
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Password</label>
+          <input type="password" required minlength="8" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="Min 8 characters">
+        </div>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Create Account</button>
+      </form>
+    </div>
+
+    <div id="dashboard-panel" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold">Dashboard</h2>
+        <button onclick="logout()" class="text-sm text-red-400 hover:text-red-300">Sign Out</button>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-sm text-gray-400">Total Users</p>
+          <p id="stat-users" class="text-3xl font-bold text-emerald-400">-</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-sm text-gray-400">Total Trips</p>
+          <p id="stat-trips" class="text-3xl font-bold text-emerald-400">-</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-sm text-gray-400">Activities</p>
+          <p id="stat-activities" class="text-3xl font-bold text-emerald-400">-</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-sm text-gray-400">Cities</p>
+          <p id="stat-cities" class="text-3xl font-bold text-emerald-400">-</p>
+        </div>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+        <h3 class="font-semibold mb-3">API Status</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center justify-between"><span>Auth Service</span><span class="text-emerald-400">Online</span></div>
+          <div class="flex items-center justify-between"><span>Trip Service</span><span class="text-emerald-400">Online</span></div>
+          <div class="flex items-center justify-between"><span>Weather Service</span><span class="text-emerald-400">Online</span></div>
+          <div class="flex items-center justify-between"><span>Activities Service</span><span class="text-emerald-400">Online</span></div>
+        </div>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+        <h3 class="font-semibold mb-3">Your Account</h3>
+        <div id="user-info" class="space-y-2 text-sm text-gray-300"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let currentToken = localStorage.getItem('tp_admin_token');
+
+    if (currentToken) { showDashboard(); loadStats(); loadUser(); }
+
+    function switchTab(tab) {
+      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
+      document.getElementById('tab-signin').className = tab === 'signin' ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
+      document.getElementById('tab-signup').className = tab === 'signup' ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
+    }
+
+    async function handleSignIn(e) {
+      e.preventDefault();
+      const inputs = e.target.querySelectorAll('input');
+      const email = inputs[0].value, password = inputs[1].value;
+      const res = await fetch(\`/api/auth/login\`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Login failed'); return; }
+      localStorage.setItem('tp_admin_token', data.token);
+      currentToken = data.token;
+      showDashboard(); loadStats(); loadUser();
+    }
+
+    async function handleSignUp(e) {
+      e.preventDefault();
+      const inputs = e.target.querySelectorAll('input');
+      const name = inputs[0].value, email = inputs[1].value, password = inputs[2].value;
+      const res = await fetch(\`/api/auth/register\`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Sign up failed'); return; }
+      localStorage.setItem('tp_admin_token', data.token);
+      currentToken = data.token;
+      showDashboard(); loadStats(); loadUser();
+    }
+
+    function showDashboard() {
+      document.getElementById('login-panel').classList.add('hidden');
+      document.getElementById('dashboard-panel').classList.remove('hidden');
+    }
+
+    function logout() {
+      localStorage.removeItem('tp_admin_token');
+      currentToken = null;
+      document.getElementById('dashboard-panel').classList.add('hidden');
+      document.getElementById('login-panel').classList.remove('hidden');
+    }
+
+    async function loadStats() {
+      const res = await fetch(\`/api/health\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } });
+      if (res.status === 401) { logout(); return; }
+      const health = await res.json();
+
+      const [usersRes, tripsRes, activitiesRes, citiesRes] = await Promise.all([
+        fetch(\`/api/health/stats/users\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
+        fetch(\`/api/health/stats/trips\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
+        fetch(\`/api/health/stats/activities\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
+        fetch(\`/api/cities\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } })
+      ]);
+
+      if (usersRes.ok) document.getElementById('stat-users').textContent = (await usersRes.json()).count;
+      if (tripsRes.ok) document.getElementById('stat-trips').textContent = (await tripsRes.json()).count;
+      if (activitiesRes.ok) document.getElementById('stat-activities').textContent = (await activitiesRes.json()).count;
+      if (citiesRes.ok) document.getElementById('stat-cities').textContent = (await citiesRes.json()).length;
+    }
+
+    async function loadUser() {
+      const res = await fetch(\`/api/auth/me\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } });
+      if (res.ok) {
+        const user = await res.json();
+        document.getElementById('user-info').innerHTML = \`
+          <p><span class="text-gray-400">Name:</span> \${user.name}</p>
+          <p><span class="text-gray-400">Email:</span> \${user.email}</p>
+          <p><span class="text-gray-400">ID:</span> \${user.id}</p>
+          <p><span class="text-gray-400">Joined:</span> \${new Date(user.created_at).toLocaleDateString()}</p>
+        \`;
+      }
+    }
+  </script>
+</body>
+</html>`);
+});
 
 // ─── AUTH ──────────────────────────────────────────
 
@@ -178,10 +365,28 @@ app.post('/api/recommendations', (req, res) => {
   res.json(scored.slice(0, 10));
 });
 
-// ─── HEALTH ────────────────────────────────────────
+// ─── HEALTH & STATS ────────────────────────────────
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '1.0.0' });
+  res.json({ status: 'ok', version: '1.0.0', uptime: process.uptime() });
+});
+
+app.get('/api/health/stats/users', auth, (req, res) => {
+  res.json({ count: db.data.users.length });
+});
+
+app.get('/api/health/stats/trips', auth, (req, res) => {
+  res.json({ count: db.data.trips.length });
+});
+
+app.get('/api/health/stats/activities', auth, (req, res) => {
+  res.json({ count: db.data.activities.length });
+});
+
+// ─── 404 ───────────────────────────────────────────
+
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found', path: req.path });
 });
 
 app.listen(PORT, () => {
