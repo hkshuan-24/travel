@@ -436,6 +436,7 @@
         });
         const data = await res.json();
         if (!res.ok) { alert(data.error || 'Login failed'); return; }
+        localStorage.removeItem('tp_guest');
         localStorage.setItem('tp_token', data.token);
         localStorage.setItem('tp_user', JSON.stringify(data.user));
         window.location.href = 'dashboard.html';
@@ -456,6 +457,7 @@
         });
         const data = await res.json();
         if (!res.ok) { alert(data.error || 'Sign up failed'); return; }
+        localStorage.removeItem('tp_guest');
         localStorage.setItem('tp_token', data.token);
         localStorage.setItem('tp_user', JSON.stringify(data.user));
         window.location.href = 'dashboard.html';
@@ -465,6 +467,7 @@
     function continueAsGuest() {
       localStorage.setItem('tp_guest', 'true');
       localStorage.removeItem('tp_token');
+      localStorage.removeItem('tp_user');
       window.location.href = 'dashboard.html';
     }
 

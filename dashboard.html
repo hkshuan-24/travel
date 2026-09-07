@@ -412,6 +412,10 @@
       currentTrips = await res.json();
       const container = document.querySelector('#view-trips .grid');
       if (!container) return;
+      if (currentTrips.length === 0) {
+        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-12">No trips yet. Click "New Trip" to start planning.</div>';
+        return;
+      }
       container.innerHTML = currentTrips.map(t => `
         <div class="bg-dark-lighter rounded-2xl border border-white/5 overflow-hidden card-hover transition">
           <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
@@ -545,11 +549,11 @@
       btn.disabled = true;
       const inputs = e.target.querySelectorAll('input, select');
       const body = {
-        title: inputs[2]?.value ? `${inputs[2].value} Trip` : 'New Trip',
-        destination: inputs[1]?.value || 'China',
+        title: inputs[1]?.value ? `${inputs[1].value} Trip` : 'New Trip',
+        destination: inputs[0]?.value || 'China',
         city: inputs[1]?.value || '',
-        start_date: inputs[3]?.value || '',
-        end_date: inputs[4]?.value || '',
+        start_date: inputs[2]?.value || '',
+        end_date: inputs[3]?.value || '',
         travellers: { adults: 2, teens: 2, children: 1 },
         style: { pace: 50, budget: 50, popularity: 50 },
         interests: ['Food','Nature'],
