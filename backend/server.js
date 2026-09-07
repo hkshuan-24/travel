@@ -13,6 +13,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || '*';
 
 app.use(cors({ origin: FRONTEND_URL }));
 app.use(express.json());
+app.use(express.static('public'));
 
 function auth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -25,9 +26,9 @@ function auth(req, res, next) {
   }
 }
 
-// ============== WEB UI ==============
+// ============== ADMIN UI ==============
 
-app.get('/', (req, res) => {
+app.get('/admin', (req, res) => {
   res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
