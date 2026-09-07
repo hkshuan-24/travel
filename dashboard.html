@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - TripPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { DEFAULT: '#0a0f0e', lighter: '#111815', card: '#0d1211' },
+            emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #0a0f0e; color: white; -webkit-font-smoothing: antialiased; }
+    .glass { background: rgba(10,15,14,0.8); backdrop-filter: blur(12px); }
+    .sidebar-link { @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/5 transition; }
+    .sidebar-link.active { @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20; }
+    .card-hover:hover { border-color: rgba(16,185,129,0.3); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #10b981; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <!-- Top Bar -->
+  <nav class="fixed top-0 left-0 right-0 z-40 glass border-b border-white/5">
+    <div class="max-w-full mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="compass" class="w-6 h-6 text-emerald-400"></i>
+        <span class="text-lg font-semibold">TripPilot</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pl-4 border-l border-white/10">
+          <div class="text-right hidden sm:block">
+            <p id="user-name" class="text-sm font-medium">Loading...</p>
+            <p id="user-role" class="text-xs text-gray-400">Member</p>
+          </div>
+          <div class="w-9 h-9 bg-emerald-500/20 rounded-full flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="fixed left-0 top-[57px] bottom-0 w-64 bg-dark-lighter border-r border-white/5 z-30 overflow-y-auto hidden md:block">
+    <div class="p-4 space-y-1">
+      <button onclick="showView('today')" id="nav-today" class="sidebar-link active w-full">
+        <i data-lucide="calendar" class="w-4 h-4"></i> Today
+      </button>
+      <button onclick="showView('trips')" id="nav-trips" class="sidebar-link w-full">
+        <i data-lucide="map" class="w-4 h-4"></i> My Trips
+      </button>
+      <button onclick="showView('plan')" id="nav-plan" class="sidebar-link w-full">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i> Plan New Trip
+      </button>
+      <button onclick="showView('explore')" id="nav-explore" class="sidebar-link w-full">
+        <i data-lucide="compass" class="w-4 h-4"></i> Explore
+      </button>
+      <button onclick="showView('weather')" id="nav-weather" class="sidebar-link w-full">
+        <i data-lucide="cloud-sun" class="w-4 h-4"></i> Weather
+      </button>
+      <button onclick="showView('activities')" id="nav-activities" class="sidebar-link w-full">
+        <i data-lucide="star" class="w-4 h-4"></i> Activities
+      </button>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5">
+      <button onclick="logout()" class="sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-500/10">
+        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Nav -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-dark-lighter border-t border-white/5 md:hidden flex justify-around py-2">
+    <button onclick="showView('today')" class="flex flex-col items-center gap-1 p-2 text-emerald-400">
+      <i data-lucide="calendar" class="w-5 h-5"></i><span class="text-[10px]">Today</span>
+    </button>
+    <button onclick="showView('trips')" class="flex flex-col items-center gap-1 p-2 text-gray-400">
+      <i data-lucide="map" class="w-5 h-5"></i><span class="text-[10px]">Trips</span>
+    </button>
+    <button onclick="showView('plan')" class="flex flex-col items-center gap-1 p-2 text-gray-400">
+      <i data-lucide="plus-circle" class="w-5 h-5"></i><span class="text-[10px]">Plan</span>
+    </button>
+    <button onclick="showView('activities')" class="flex flex-col items-center gap-1 p-2 text-gray-400">
+      <i data-lucide="star" class="w-5 h-5"></i><span class="text-[10px]">Activities</span>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 pt-[57px] pb-20 md:pb-8 px-4 md:px-8 py-6">
+
+    <!-- TODAY VIEW -->
+    <div id="view-today" class="max-w-5xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-400 text-sm">Welcome back</p>
+          <h1 id="today-greeting" class="text-2xl font-bold">Your Dashboard</h1>
+        </div>
+      </div>
+
+      <div id="today-empty" class="bg-dark-lighter rounded-2xl p-12 border border-white/5 text-center">
+        <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="map" class="w-8 h-8 text-emerald-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">No trips yet</h3>
+        <p class="text-gray-400 mb-6">Start planning your first adventure</p>
+        <button onclick="showView('plan')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-6 py-3 rounded-full transition">Plan a Trip</button>
+      </div>
+
+      <div id="today-content" class="hidden space-y-6">
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5">
+          <h2 class="font-semibold mb-4">Upcoming Trip</h2>
+          <div id="today-trip-info"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY TRIPS -->
+    <div id="view-trips" class="max-w-5xl mx-auto space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">My Trips</h1>
+        <button onclick="showView('plan')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-4 py-2 rounded-full text-sm transition flex items-center gap-2">
+          <i data-lucide="plus" class="w-4 h-4"></i> New Trip
+        </button>
+      </div>
+      <div id="trips-grid" class="grid md:grid-cols-2 gap-4">
+        <div class="col-span-2 text-center text-gray-500 py-12">Loading trips...</div>
+      </div>
+    </div>
+
+    <!-- PLAN NEW TRIP -->
+    <div id="view-plan" class="max-w-3xl mx-auto space-y-6 hidden">
+      <h1 class="text-2xl font-bold">Plan a New Trip</h1>
+      <form id="plan-form" class="bg-dark-lighter rounded-2xl p-6 md:p-8 border border-white/5 space-y-6">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Destination Country</label>
+            <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white">
+              <option value="">Select...</option>
+              <option>China</option>
+              <option>Japan</option>
+              <option>Thailand</option>
+              <option>Vietnam</option>
+              <option>Singapore</option>
+              <option>Malaysia</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">City / Cities</label>
+            <input type="text" placeholder="e.g. Beijing, Shanghai" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500">
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Start Date</label>
+            <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white">
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">End Date</label>
+            <input type="date" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-2 block">Travellers</label>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white/5 rounded-xl p-3 text-center">
+              <input type="number" value="2" min="0" class="w-full bg-transparent text-2xl font-bold text-center text-white">
+              <p class="text-xs text-gray-400">Adults</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-3 text-center">
+              <input type="number" value="0" min="0" class="w-full bg-transparent text-2xl font-bold text-center text-white">
+              <p class="text-xs text-gray-400">Teens</p>
+            </div>
+            <div class="bg-white/5 rounded-xl p-3 text-center">
+              <input type="number" value="0" min="0" class="w-full bg-transparent text-2xl font-bold text-center text-white">
+              <p class="text-xs text-gray-400">Children</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-2 block">Interests</label>
+          <div class="flex flex-wrap gap-2" id="interests-tags">
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Food">Food</span>
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Nature">Nature</span>
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="History">History</span>
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Shopping">Shopping</span>
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Nightlife">Nightlife</span>
+            <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Adventure">Adventure</span>
+          </div>
+        </div>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">
+          Create Trip
+        </button>
+      </form>
+    </div>
+
+    <!-- EXPLORE -->
+    <div id="view-explore" class="max-w-5xl mx-auto space-y-6 hidden">
+      <h1 class="text-2xl font-bold">Explore Destinations</h1>
+      <div id="explore-grid" class="grid md:grid-cols-3 gap-4">
+        <div class="col-span-3 text-center text-gray-500 py-12">Loading destinations...</div>
+      </div>
+    </div>
+
+    <!-- WEATHER -->
+    <div id="view-weather" class="max-w-5xl mx-auto space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Weather</h1>
+        <div class="flex gap-2">
+          <input type="text" id="weather-city-input" placeholder="Enter city..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white placeholder-gray-500">
+          <button onclick="loadWeatherForCity()" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-4 py-2 rounded-xl text-sm transition">Check</button>
+        </div>
+      </div>
+      <div id="weather-content">
+        <div class="text-center text-gray-500 py-12">Enter a city to check weather</div>
+      </div>
+    </div>
+
+    <!-- ACTIVITIES -->
+    <div id="view-activities" class="max-w-5xl mx-auto space-y-6 hidden">
+      <h1 class="text-2xl font-bold">Activities</h1>
+      <div id="activities-grid" class="grid md:grid-cols-2 gap-4">
+        <div class="col-span-2 text-center text-gray-500 py-12">Loading activities...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = 'https://travel-r5tx.onrender.com';
+    let currentUser = null;
+    let currentTrips = [];
+    let selectedInterests = [];
+
+    function getToken() { return localStorage.getItem('tp_token'); }
+
+    async function api(path, opts = {}) {
+      const token = getToken();
+      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      const res = await fetch(`${API_BASE}${path}`, { ...opts, headers });
+      if (res.status === 401) { localStorage.clear(); window.location.href = 'index.html'; }
+      return res;
+    }
+
+    async function loadUser() {
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      if (isGuest) {
+        document.getElementById('user-name').textContent = 'Guest';
+        document.getElementById('user-role').textContent = 'Guest Mode';
+        document.getElementById('today-greeting').textContent = 'Guest Dashboard';
+        return;
+      }
+      const res = await api('/api/auth/me');
+      if (!res.ok) return;
+      currentUser = await res.json();
+      document.getElementById('user-name').textContent = currentUser.name;
+      document.getElementById('today-greeting').textContent = `Welcome, ${currentUser.name}`;
+    }
+
+    async function loadTrips() {
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      if (isGuest) { loadGuestTrips(); return; }
+      const res = await api('/api/trips');
+      if (!res.ok) return;
+      currentTrips = await res.json();
+      const container = document.getElementById('trips-grid');
+      if (currentTrips.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-2 text-center py-12">
+            <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="map" class="w-8 h-8 text-emerald-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">No trips yet</h3>
+            <p class="text-gray-400 mb-4">Create your first trip to get started</p>
+            <button onclick="showView('plan')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-6 py-2 rounded-full text-sm transition">Plan a Trip</button>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+      container.innerHTML = currentTrips.map(t => `
+        <div class="bg-dark-lighter rounded-2xl border border-white/5 overflow-hidden card-hover transition">
+          <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-lg">${t.title || 'Untitled Trip'}</h3>
+              <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">${t.status || 'Planning'}</span>
+            </div>
+            <p class="text-sm text-gray-400 mb-3">${t.city || t.destination || ''} · ${t.start_date || ''} - ${t.end_date || ''}</p>
+            <button onclick="deleteTrip('${t.id}')" class="text-xs text-red-400 hover:text-red-300">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+
+      // Update today view if trips exist
+      if (currentTrips.length > 0) {
+        document.getElementById('today-empty').classList.add('hidden');
+        document.getElementById('today-content').classList.remove('hidden');
+        const upcoming = currentTrips[0];
+        document.getElementById('today-trip-info').innerHTML = `
+          <h3 class="text-xl font-semibold mb-2">${upcoming.title}</h3>
+          <p class="text-gray-400 mb-4">${upcoming.city || upcoming.destination || ''} · ${upcoming.start_date || ''} - ${upcoming.end_date || ''}</p>
+          <button onclick="showView('trips')" class="text-emerald-400 hover:text-emerald-300 text-sm">View all trips</button>
+        `;
+      }
+    }
+
+    async function deleteTrip(id) {
+      if (!confirm('Delete this trip?')) return;
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      if (isGuest) {
+        const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
+        const idx = trips.findIndex(t => t.id === id);
+        if (idx > -1) trips.splice(idx, 1);
+        localStorage.setItem('tp_guest_trips', JSON.stringify(trips));
+        loadGuestTrips();
+        return;
+      }
+      const res = await api(`/api/trips/${id}`, { method: 'DELETE' });
+      if (res.ok) loadTrips();
+    }
+
+    async function loadActivities() {
+      const res = await api('/api/activities');
+      if (!res.ok) return;
+      const acts = await res.json();
+      const container = document.getElementById('activities-grid');
+      if (acts.length === 0) {
+        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-12">No activities available</div>';
+        return;
+      }
+      container.innerHTML = acts.slice(0, 10).map(a => `
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5 card-hover transition">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="map-pin" class="w-7 h-7 text-emerald-400"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold">${a.name}</h3>
+              <p class="text-sm text-gray-400 mb-2">${a.city || ''} · ${a.duration || ''} · ${a.price || ''}</p>
+              <div class="flex flex-wrap gap-1">${(a.tags || []).map(t => `<span class="text-[10px] bg-white/5 px-2 py-1 rounded-full">${t}</span>`).join('')}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function loadWeather(city = 'Beijing') {
+      const res = await api(`/api/weather/${city}`);
+      if (!res.ok) return;
+      const w = await res.json();
+      document.getElementById('weather-content').innerHTML = `
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5">
+            <i data-lucide="thermometer" class="w-6 h-6 text-emerald-400 mb-2"></i>
+            <p class="text-sm text-gray-400">Temperature</p>
+            <p class="text-2xl font-bold">${w.temperature}°C</p>
+          </div>
+          <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5">
+            <i data-lucide="droplets" class="w-6 h-6 text-blue-400 mb-2"></i>
+            <p class="text-sm text-gray-400">Rain</p>
+            <p class="text-2xl font-bold">${w.precipitation}%</p>
+          </div>
+          <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5">
+            <i data-lucide="wind" class="w-6 h-6 text-gray-400 mb-2"></i>
+            <p class="text-sm text-gray-400">Wind</p>
+            <p class="text-2xl font-bold">${w.wind_speed} km/h</p>
+          </div>
+          <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5">
+            <i data-lucide="eye" class="w-6 h-6 text-emerald-400 mb-2"></i>
+            <p class="text-sm text-gray-400">Visibility</p>
+            <p class="text-2xl font-bold">${w.visibility} km</p>
+          </div>
+        </div>
+        <div class="bg-dark-lighter rounded-2xl p-6 border border-white/5">
+          <h3 class="font-semibold mb-4">3-Day Forecast</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            ${(w.forecast || []).map(f => `
+              <div class="bg-white/5 rounded-xl p-4 text-center">
+                <p class="text-sm font-medium mb-2">${f.day}</p>
+                <p class="text-2xl font-bold mb-1">${f.temp}°C</p>
+                <p class="text-xs text-gray-400">${f.condition} · ${f.rain}% rain</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function loadWeatherForCity() {
+      const city = document.getElementById('weather-city-input').value;
+      if (city) loadWeather(city);
+    }
+
+    async function loadCities() {
+      const res = await api('/api/cities');
+      if (!res.ok) return;
+      const cities = await res.json();
+      const container = document.getElementById('explore-grid');
+      if (cities.length === 0) {
+        container.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-12">No destinations available</div>';
+        return;
+      }
+      container.innerHTML = cities.map(city => `
+        <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer" onclick="document.getElementById('weather-city-input').value='${city}';showView('weather');loadWeather('${city}');">
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 to-blue-900/80"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <h3 class="text-2xl font-bold">${city}</h3>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showView(view) {
+      document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('view-' + view).classList.remove('hidden');
+      document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+      const nav = document.getElementById('nav-' + view);
+      if (nav) nav.classList.add('active');
+      if (view === 'trips') loadTrips();
+      if (view === 'activities') loadActivities();
+      if (view === 'weather' && !document.getElementById('weather-content').innerHTML.includes('Temperature')) loadWeather();
+      if (view === 'explore') loadCities();
+    }
+
+    function logout() {
+      if (confirm('Sign out?')) {
+        localStorage.clear();
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Guest mode
+    function setupGuestMode() {
+      document.getElementById('user-name').textContent = 'Guest';
+      document.getElementById('user-role').textContent = 'Guest Mode';
+      const banner = document.createElement('div');
+      banner.id = 'guest-banner';
+      banner.className = 'fixed top-[57px] left-0 right-0 z-35 bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 text-center text-sm text-amber-400';
+      banner.innerHTML = 'Guest Mode — <button onclick="openAuthFromGuest()" class="underline hover:text-amber-300">Sign in or create an account</button> to save your trips';
+      document.body.appendChild(banner);
+      document.querySelector('main').style.paddingTop = '88px';
+      loadGuestTrips();
+    }
+
+    function openAuthFromGuest() {
+      localStorage.removeItem('tp_guest');
+      window.location.href = 'index.html';
+    }
+
+    function loadGuestTrips() {
+      const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
+      const container = document.getElementById('trips-grid');
+      if (trips.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-2 text-center py-12">
+            <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="map" class="w-8 h-8 text-emerald-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">No trips yet</h3>
+            <p class="text-gray-400 mb-4">Create your first trip to get started</p>
+            <button onclick="showView('plan')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-6 py-2 rounded-full text-sm transition">Plan a Trip</button>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+      container.innerHTML = trips.map((t, i) => `
+        <div class="bg-dark-lighter rounded-2xl border border-white/5 overflow-hidden card-hover transition">
+          <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-lg">${t.title || 'Untitled Trip'}</h3>
+              <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">Planning</span>
+            </div>
+            <p class="text-sm text-gray-400 mb-3">${t.city || ''} · ${t.start_date || ''} - ${t.end_date || ''}</p>
+            <button onclick="deleteGuestTrip(${i})" class="text-xs text-red-400 hover:text-red-300">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function deleteGuestTrip(index) {
+      const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
+      trips.splice(index, 1);
+      localStorage.setItem('tp_guest_trips', JSON.stringify(trips));
+      loadGuestTrips();
+    }
+
+    // Interest tags
+    document.querySelectorAll('.interest-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        const t = this.dataset.tag;
+        if (selectedInterests.includes(t)) {
+          selectedInterests = selectedInterests.filter(i => i !== t);
+          this.classList.remove('bg-emerald-500/20', 'text-emerald-400');
+          this.classList.add('bg-white/5', 'text-gray-400');
+        } else {
+          selectedInterests.push(t);
+          this.classList.remove('bg-white/5', 'text-gray-400');
+          this.classList.add('bg-emerald-500/20', 'text-emerald-400');
+        }
+      });
+    });
+
+    async function createTrip(e) {
+      e.preventDefault();
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      const btn = e.target.querySelector('button[type="submit"]');
+      const original = btn.textContent;
+      btn.textContent = 'Creating...';
+      btn.disabled = true;
+
+      const inputs = e.target.querySelectorAll('input, select');
+      const body = {
+        title: inputs[1]?.value ? `${inputs[1].value} Trip` : 'New Trip',
+        destination: inputs[0]?.value || '',
+        city: inputs[1]?.value || '',
+        start_date: inputs[2]?.value || '',
+        end_date: inputs[3]?.value || '',
+        travellers: { adults: parseInt(inputs[4]?.value) || 1, teens: parseInt(inputs[5]?.value) || 0, children: parseInt(inputs[6]?.value) || 0 },
+        interests: selectedInterests,
+        status: 'planning'
+      };
+
+      if (isGuest) {
+        const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
+        trips.push({ ...body, id: 'guest_' + Date.now(), created_at: new Date().toISOString() });
+        localStorage.setItem('tp_guest_trips', JSON.stringify(trips));
+        btn.textContent = original; btn.disabled = false;
+        alert('Trip saved locally! Sign in to sync to your account.');
+        showView('trips');
+        loadGuestTrips();
+        return;
+      }
+
+      const res = await api('/api/trips', { method: 'POST', body: JSON.stringify(body) });
+      btn.textContent = original; btn.disabled = false;
+      if (!res.ok) { alert('Failed to create trip'); return; }
+      alert('Trip created!');
+      showView('trips');
+      loadTrips();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      if (!getToken() && !isGuest) { window.location.href = 'index.html'; return; }
+      if (!isGuest) loadUser();
+      else setupGuestMode();
+      document.getElementById('plan-form').addEventListener('submit', createTrip);
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

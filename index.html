@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripPilot - Plan Your Next Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { DEFAULT: '#0a0f0e', lighter: '#111815', card: '#0d1211' },
+            emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #0a0f0e; color: white; -webkit-font-smoothing: antialiased; }
+    .glass { background: rgba(10,15,14,0.8); backdrop-filter: blur(12px); }
+    .card-hover:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-2px); }
+    .modal-enter { animation: modalIn 0.3s ease-out forwards; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body class="font-sans">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="compass" class="w-7 h-7 text-emerald-400"></i>
+        <span class="text-xl font-semibold tracking-tight">TripPilot</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+        <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
+        <a href="#features" class="hover:text-white transition">Features</a>
+      </div>
+      <div class="hidden md:flex items-center gap-4">
+        <button onclick="openAuth('signin')" class="text-sm text-gray-400 hover:text-white transition">Sign In</button>
+        <button onclick="openAuth('signup')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-5 py-2.5 rounded-full text-sm transition">Plan a Trip</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeAuth()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="bg-dark-lighter rounded-3xl border border-white/10 w-full max-w-md p-8 modal-enter relative">
+        <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        
+        <div class="text-center mb-8">
+          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="compass" class="w-7 h-7 text-emerald-400"></i>
+          </div>
+          <h2 id="auth-title" class="text-2xl font-bold">Welcome back</h2>
+          <p id="auth-subtitle" class="text-gray-400 text-sm mt-1">Sign in to access your trips</p>
+        </div>
+
+        <div class="flex bg-white/5 rounded-full p-1 mb-6">
+          <button onclick="switchAuthTab('signin')" id="auth-tab-signin" class="flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black">Sign In</button>
+          <button onclick="switchAuthTab('signup')" id="auth-tab-signup" class="flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white">Create Account</button>
+        </div>
+
+        <form id="form-signin" class="space-y-4" onsubmit="handleSignIn(event)">
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Email</label>
+            <input type="email" placeholder="you@example.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Password</label>
+            <input type="password" placeholder="••••••••" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
+          </div>
+          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Sign In</button>
+        </form>
+
+        <form id="form-signup" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Full Name</label>
+            <input type="text" placeholder="John Doe" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Email</label>
+            <input type="email" placeholder="you@example.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Password</label>
+            <input type="password" placeholder="Min 8 characters" minlength="8" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
+          </div>
+          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Create Account</button>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-white/10 text-center">
+          <p class="text-sm text-gray-400 mb-3">Want to try it first?</p>
+          <button onclick="continueAsGuest()" class="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition">Continue as Guest</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80" class="w-full h-full object-cover opacity-30" alt="Travel">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-dark/50 to-dark"></div>
+    </div>
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto pt-20">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">Your Trip.<br><span class="text-emerald-400">Planned.</span></h1>
+      <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Plan your next adventure. Organize destinations, activities, and itineraries — all in one place.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button onclick="openAuth('signup')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8 py-4 rounded-full text-lg transition">Start Planning</button>
+        <button onclick="continueAsGuest()" class="bg-white/10 hover:bg-white/20 text-white font-medium px-8 py-4 rounded-full text-lg transition backdrop-blur-sm border border-white/10">Try as Guest</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="py-24 px-6">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">How It Works</h2>
+      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">Three simple steps to your perfect trip</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
+          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="map-pin" class="w-7 h-7 text-emerald-400"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Choose Destination</h3>
+          <p class="text-gray-400">Pick your city or country. We'll help you discover the best spots.</p>
+        </div>
+        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
+          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="calendar" class="w-7 h-7 text-emerald-400"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Set Your Dates</h3>
+          <p class="text-gray-400">Tell us when you're traveling and how many people are going.</p>
+        </div>
+        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
+          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="route" class="w-7 h-7 text-emerald-400"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Build Itinerary</h3>
+          <p class="text-gray-400">Add activities, restaurants, and sights. We'll optimize your schedule.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-24 px-6 border-t border-white/5">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Everything You Need</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="map" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Trip Planning</h4>
+            <p class="text-sm text-gray-400">Organize multiple trips with dates, destinations, and travellers.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="list-checks" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Day-by-Day Itinerary</h4>
+            <p class="text-sm text-gray-400">Plan each day with activities, times, and notes.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="cloud-sun" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Weather Check</h4>
+            <p class="text-sm text-gray-400">See current weather for your destination.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="bookmark" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Save Activities</h4>
+            <p class="text-sm text-gray-400">Bookmark restaurants, sights, and experiences.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="users" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Travel Group</h4>
+            <p class="text-sm text-gray-400">Track who's coming and their preferences.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+          <i data-lucide="smartphone" class="w-6 h-6 text-emerald-400 shrink-0"></i>
+          <div>
+            <h4 class="font-semibold mb-1">Works Everywhere</h4>
+            <p class="text-sm text-gray-400">Access your trips on any device, anytime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 border-t border-white/5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <i data-lucide="compass" class="w-5 h-5 text-emerald-400"></i>
+        <span class="font-semibold">TripPilot</span>
+      </div>
+      <p class="text-sm text-gray-500">Your personal trip planner</p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'https://travel-r5tx.onrender.com';
+
+    function openAuth(tab) {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      switchAuthTab(tab);
+      lucide.createIcons();
+    }
+
+    function closeAuth() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
+      document.getElementById('auth-tab-signin').className = tab === 'signin' 
+        ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' 
+        : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
+      document.getElementById('auth-tab-signup').className = tab === 'signup' 
+        ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' 
+        : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
+      document.getElementById('auth-title').textContent = tab === 'signin' ? 'Welcome back' : 'Create account';
+      document.getElementById('auth-subtitle').textContent = tab === 'signin' ? 'Sign in to access your trips' : 'Start planning your next adventure';
+    }
+
+    async function handleSignIn(e) {
+      e.preventDefault();
+      const inputs = e.target.querySelectorAll('input');
+      const email = inputs[0].value, password = inputs[1].value;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Login failed'); return; }
+        localStorage.removeItem('tp_guest');
+        localStorage.setItem('tp_token', data.token);
+        localStorage.setItem('tp_user', JSON.stringify(data.user));
+        window.location.href = 'dashboard.html';
+      } catch (err) { alert('Network error'); }
+    }
+
+    async function handleSignUp(e) {
+      e.preventDefault();
+      const inputs = e.target.querySelectorAll('input');
+      const name = inputs[0].value, email = inputs[1].value, password = inputs[2].value;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Sign up failed'); return; }
+        localStorage.removeItem('tp_guest');
+        localStorage.setItem('tp_token', data.token);
+        localStorage.setItem('tp_user', JSON.stringify(data.user));
+        window.location.href = 'dashboard.html';
+      } catch (err) { alert('Network error'); }
+    }
+
+    function continueAsGuest() {
+      localStorage.setItem('tp_guest', 'true');
+      localStorage.removeItem('tp_token');
+      localStorage.removeItem('tp_user');
+      window.location.href = 'dashboard.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
