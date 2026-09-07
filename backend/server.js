@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 const db = require('./database');
 
 const app = express();
@@ -12,6 +13,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'trippilot-dev-secret';
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..')));
 
 function auth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
