@@ -25,9 +25,8 @@ function auth(req, res, next) {
   }
 }
 
-// ─── WEB UI ROUTES ─────────────────────────────────
+// ============== WEB UI ==============
 
-// Login / Admin portal page
 app.get('/', (req, res) => {
   res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -36,7 +35,7 @@ app.get('/', (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TripPilot Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>body{font-family:Inter,sans-serif;background:#0a0f0e;color:#fff;}</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -62,7 +61,7 @@ app.get('/', (req, res) => {
         </div>
         <div>
           <label class="text-sm text-gray-400 mb-1 block">Password</label>
-          <input type="password" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="••••••••">
+          <input type="password" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" placeholder="********">
         </div>
         <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Sign In</button>
       </form>
@@ -140,7 +139,7 @@ app.get('/', (req, res) => {
       e.preventDefault();
       const inputs = e.target.querySelectorAll('input');
       const email = inputs[0].value, password = inputs[1].value;
-      const res = await fetch(\`/api/auth/login\`, {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
@@ -155,7 +154,7 @@ app.get('/', (req, res) => {
       e.preventDefault();
       const inputs = e.target.querySelectorAll('input');
       const name = inputs[0].value, email = inputs[1].value, password = inputs[2].value;
-      const res = await fetch(\`/api/auth/register\`, {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
       });
@@ -179,15 +178,14 @@ app.get('/', (req, res) => {
     }
 
     async function loadStats() {
-      const res = await fetch(\`/api/health\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } });
+      const res = await fetch(`${API_BASE}/api/health`, { headers: { 'Authorization': `Bearer ${currentToken}` } });
       if (res.status === 401) { logout(); return; }
-      const health = await res.json();
 
       const [usersRes, tripsRes, activitiesRes, citiesRes] = await Promise.all([
-        fetch(\`/api/health/stats/users\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
-        fetch(\`/api/health/stats/trips\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
-        fetch(\`/api/health/stats/activities\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } }),
-        fetch(\`/api/cities\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } })
+        fetch(`${API_BASE}/api/health/stats/users`, { headers: { 'Authorization': `Bearer ${currentToken}` } }),
+        fetch(`${API_BASE}/api/health/stats/trips`, { headers: { 'Authorization': `Bearer ${currentToken}` } }),
+        fetch(`${API_BASE}/api/health/stats/activities`, { headers: { 'Authorization': `Bearer ${currentToken}` } }),
+        fetch(`${API_BASE}/api/cities`, { headers: { 'Authorization': `Bearer ${currentToken}` } })
       ]);
 
       if (usersRes.ok) document.getElementById('stat-users').textContent = (await usersRes.json()).count;
@@ -197,15 +195,15 @@ app.get('/', (req, res) => {
     }
 
     async function loadUser() {
-      const res = await fetch(\`/api/auth/me\`, { headers: { 'Authorization': \`Bearer \${currentToken}\` } });
+      const res = await fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${currentToken}` } });
       if (res.ok) {
         const user = await res.json();
-        document.getElementById('user-info').innerHTML = \`
-          <p><span class="text-gray-400">Name:</span> \${user.name}</p>
-          <p><span class="text-gray-400">Email:</span> \${user.email}</p>
-          <p><span class="text-gray-400">ID:</span> \${user.id}</p>
-          <p><span class="text-gray-400">Joined:</span> \${new Date(user.created_at).toLocaleDateString()}</p>
-        \`;
+        document.getElementById('user-info').innerHTML = `
+          <p><span class="text-gray-400">Name:</span> ${user.name}</p>
+          <p><span class="text-gray-400">Email:</span> ${user.email}</p>
+          <p><span class="text-gray-400">ID:</span> ${user.id}</p>
+          <p><span class="text-gray-400">Joined:</span> ${new Date(user.created_at).toLocaleDateString()}</p>
+        `;
       }
     }
   </script>
@@ -213,7 +211,7 @@ app.get('/', (req, res) => {
 </html>`);
 });
 
-// ─── AUTH ──────────────────────────────────────────
+// ============== AUTH ==============
 
 app.post('/api/auth/register', (req, res) => {
   const { email, password, name } = req.body;
@@ -244,7 +242,7 @@ app.get('/api/auth/me', auth, (req, res) => {
   res.json({ id: user.id, email: user.email, name: user.name, created_at: user.created_at });
 });
 
-// ─── TRIPS ─────────────────────────────────────────
+// ============== TRIPS ==============
 
 app.post('/api/trips', auth, (req, res) => {
   const trip = {
@@ -278,7 +276,7 @@ app.delete('/api/trips/:id', auth, (req, res) => {
   res.json({ message: 'Deleted' });
 });
 
-// ─── ITINERARY ─────────────────────────────────────
+// ============== ITINERARY ==============
 
 app.post('/api/trips/:tripId/itinerary', auth, (req, res) => {
   const item = { id: uuidv4(), trip_id: req.params.tripId, completed: false, ...req.body };
@@ -293,7 +291,7 @@ app.patch('/api/itinerary/:id', auth, (req, res) => {
   res.json(item);
 });
 
-// ─── ACTIVITIES ────────────────────────────────────
+// ============== ACTIVITIES ==============
 
 app.get('/api/activities', (req, res) => {
   let results = db.data.activities;
@@ -308,7 +306,7 @@ app.get('/api/activities/:id', (req, res) => {
   res.json(a);
 });
 
-// ─── WEATHER ───────────────────────────────────────
+// ============== WEATHER ==============
 
 app.get('/api/weather/:city', (req, res) => {
   const today = new Date().toISOString().split('T')[0];
@@ -338,14 +336,14 @@ app.get('/api/weather/:city', (req, res) => {
   res.json(w);
 });
 
-// ─── CITIES ────────────────────────────────────────
+// ============== CITIES ==============
 
 app.get('/api/cities', (req, res) => {
   const cities = [...new Set(db.data.activities.map(a => a.city))];
   res.json(cities);
 });
 
-// ─── RECOMMENDATIONS ENGINE ────────────────────────
+// ============== RECOMMENDATIONS ==============
 
 app.post('/api/recommendations', (req, res) => {
   const { city, interests, weather_ok } = req.body;
@@ -365,7 +363,7 @@ app.post('/api/recommendations', (req, res) => {
   res.json(scored.slice(0, 10));
 });
 
-// ─── HEALTH & STATS ────────────────────────────────
+// ============== HEALTH & STATS ==============
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', version: '1.0.0', uptime: process.uptime() });
@@ -383,7 +381,7 @@ app.get('/api/health/stats/activities', auth, (req, res) => {
   res.json({ count: db.data.activities.length });
 });
 
-// ─── 404 ───────────────────────────────────────────
+// ============== 404 ==============
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found', path: req.path });
