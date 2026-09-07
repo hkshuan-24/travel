@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TripPilot - Plan Your Next Adventure</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -23,197 +22,118 @@
   </script>
   <style>
     body { background: #0a0f0e; color: white; -webkit-font-smoothing: antialiased; }
-    .glass { background: rgba(10,15,14,0.8); backdrop-filter: blur(12px); }
+    .glass { background: rgba(10,15,14,0.85); backdrop-filter: blur(12px); }
+    .card-hover { transition: all 0.2s ease; }
     .card-hover:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-2px); }
-    .modal-enter { animation: modalIn 0.3s ease-out forwards; }
-    @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .btn-primary { background: #10b981; color: #000; font-weight: 600; transition: all 0.2s; }
+    .btn-primary:hover { background: #059669; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    input:focus { outline: none; border-color: #10b981; }
+    .modal-enter { animation: modalIn 0.25s ease-out; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: #10b981; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hero-bg { background: linear-gradient(135deg, #0a0f0e 0%, #111815 50%, #0d1f1a 100%); }
   </style>
 </head>
 <body class="font-sans">
 
   <!-- Nav -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <i data-lucide="compass" class="w-7 h-7 text-emerald-400"></i>
-        <span class="text-xl font-semibold tracking-tight">TripPilot</span>
-      </div>
-      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
-        <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
-        <a href="#features" class="hover:text-white transition">Features</a>
-      </div>
-      <div class="hidden md:flex items-center gap-4">
-        <button onclick="openAuth('signin')" class="text-sm text-gray-400 hover:text-white transition">Sign In</button>
-        <button onclick="openAuth('signup')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-medium px-5 py-2.5 rounded-full text-sm transition">Plan a Trip</button>
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/travel/" class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        <span class="text-lg font-semibold">TripPilot</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <button onclick="openAuth('signin')" class="text-sm text-gray-400 hover:text-white transition px-3 py-2">Sign In</button>
+        <button onclick="openAuth('signup')" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</button>
       </div>
     </div>
   </nav>
 
   <!-- Auth Modal -->
-  <div id="auth-modal" class="fixed inset-0 z-[100] hidden">
-    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeAuth()"></div>
+  <div id="auth-modal" class="fixed inset-0 z-[100] hidden" onclick="if(event.target===this)closeAuth()">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4">
-      <div class="bg-dark-lighter rounded-3xl border border-white/10 w-full max-w-md p-8 modal-enter relative">
-        <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        
-        <div class="text-center mb-8">
-          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <i data-lucide="compass" class="w-7 h-7 text-emerald-400"></i>
+      <div class="bg-dark-lighter rounded-2xl border border-white/10 w-full max-w-sm p-6 modal-enter">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
           </div>
-          <h2 id="auth-title" class="text-2xl font-bold">Welcome back</h2>
-          <p id="auth-subtitle" class="text-gray-400 text-sm mt-1">Sign in to access your trips</p>
+          <h2 id="auth-title" class="text-xl font-bold">Welcome back</h2>
         </div>
 
-        <div class="flex bg-white/5 rounded-full p-1 mb-6">
-          <button onclick="switchAuthTab('signin')" id="auth-tab-signin" class="flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black">Sign In</button>
-          <button onclick="switchAuthTab('signup')" id="auth-tab-signup" class="flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white">Create Account</button>
+        <div class="flex bg-white/5 rounded-lg p-1 mb-4">
+          <button onclick="switchAuthTab('signin')" id="auth-tab-signin" class="flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black">Sign In</button>
+          <button onclick="switchAuthTab('signup')" id="auth-tab-signup" class="flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white">Sign Up</button>
         </div>
 
-        <form id="form-signin" class="space-y-4" onsubmit="handleSignIn(event)">
-          <div>
-            <label class="text-sm text-gray-400 mb-1 block">Email</label>
-            <input type="email" placeholder="you@example.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
-          </div>
-          <div>
-            <label class="text-sm text-gray-400 mb-1 block">Password</label>
-            <input type="password" placeholder="••••••••" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
-          </div>
-          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Sign In</button>
+        <form id="form-signin" class="space-y-3" onsubmit="handleAuth(event, 'login')">
+          <input type="email" placeholder="Email" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
+          <input type="password" placeholder="Password" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
+          <button type="submit" id="btn-signin" class="w-full btn-primary py-3 rounded-lg text-sm">Sign In</button>
         </form>
 
-        <form id="form-signup" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
-          <div>
-            <label class="text-sm text-gray-400 mb-1 block">Full Name</label>
-            <input type="text" placeholder="John Doe" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
-          </div>
-          <div>
-            <label class="text-sm text-gray-400 mb-1 block">Email</label>
-            <input type="email" placeholder="you@example.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
-          </div>
-          <div>
-            <label class="text-sm text-gray-400 mb-1 block">Password</label>
-            <input type="password" placeholder="Min 8 characters" minlength="8" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald-500 transition" required>
-          </div>
-          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">Create Account</button>
+        <form id="form-signup" class="space-y-3 hidden" onsubmit="handleAuth(event, 'register')">
+          <input type="text" placeholder="Full Name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
+          <input type="email" placeholder="Email" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
+          <input type="password" placeholder="Password (min 8)" minlength="8" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
+          <button type="submit" id="btn-signup" class="w-full btn-primary py-3 rounded-lg text-sm">Create Account</button>
         </form>
 
-        <div class="mt-6 pt-6 border-t border-white/10 text-center">
-          <p class="text-sm text-gray-400 mb-3">Want to try it first?</p>
-          <button onclick="continueAsGuest()" class="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition">Continue as Guest</button>
+        <div class="mt-4 pt-4 border-t border-white/10 text-center">
+          <button onclick="continueAsGuest()" class="text-emerald-400 hover:text-emerald-300 text-sm">Continue as Guest</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Hero -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0">
-      <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80" class="w-full h-full object-cover opacity-30" alt="Travel">
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-dark/50 to-dark"></div>
-    </div>
-    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto pt-20">
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">Your Trip.<br><span class="text-emerald-400">Planned.</span></h1>
-      <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Plan your next adventure. Organize destinations, activities, and itineraries — all in one place.</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <button onclick="openAuth('signup')" class="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8 py-4 rounded-full text-lg transition">Start Planning</button>
-        <button onclick="continueAsGuest()" class="bg-white/10 hover:bg-white/20 text-white font-medium px-8 py-4 rounded-full text-lg transition backdrop-blur-sm border border-white/10">Try as Guest</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section id="how-it-works" class="py-24 px-6">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">How It Works</h2>
-      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">Three simple steps to your perfect trip</p>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
-          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-            <i data-lucide="map-pin" class="w-7 h-7 text-emerald-400"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Choose Destination</h3>
-          <p class="text-gray-400">Pick your city or country. We'll help you discover the best spots.</p>
-        </div>
-        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
-          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-            <i data-lucide="calendar" class="w-7 h-7 text-emerald-400"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Set Your Dates</h3>
-          <p class="text-gray-400">Tell us when you're traveling and how many people are going.</p>
-        </div>
-        <div class="bg-dark-lighter rounded-2xl p-8 border border-white/5 card-hover transition">
-          <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-            <i data-lucide="route" class="w-7 h-7 text-emerald-400"></i>
-          </div>
-          <h3 class="text-xl font-semibold mb-3">Build Itinerary</h3>
-          <p class="text-gray-400">Add activities, restaurants, and sights. We'll optimize your schedule.</p>
-        </div>
+  <section class="hero-bg min-h-screen flex items-center justify-center px-4 pt-16">
+    <div class="max-w-2xl mx-auto text-center">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Plan Your Next<br><span class="text-emerald-400">Adventure</span></h1>
+      <p class="text-gray-400 text-lg mb-8 max-w-lg mx-auto">Organize destinations, activities, and itineraries. All in one place.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="openAuth('signup')" class="btn-primary px-8 py-3.5 rounded-lg">Start Planning</button>
+        <button onclick="continueAsGuest()" class="btn-secondary px-8 py-3.5 rounded-lg">Try as Guest</button>
       </div>
     </div>
   </section>
 
   <!-- Features -->
-  <section id="features" class="py-24 px-6 border-t border-white/5">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Everything You Need</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="map" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Trip Planning</h4>
-            <p class="text-sm text-gray-400">Organize multiple trips with dates, destinations, and travellers.</p>
+  <section class="py-20 px-4 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold text-center mb-12">Everything You Need</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5 card-hover">
+          <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7"/></svg>
           </div>
+          <h3 class="font-semibold mb-1">Trip Planning</h3>
+          <p class="text-sm text-gray-400">Organize multiple trips with dates and destinations.</p>
         </div>
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="list-checks" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Day-by-Day Itinerary</h4>
-            <p class="text-sm text-gray-400">Plan each day with activities, times, and notes.</p>
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5 card-hover">
+          <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           </div>
+          <h3 class="font-semibold mb-1">Day-by-Day</h3>
+          <p class="text-sm text-gray-400">Plan each day with activities and times.</p>
         </div>
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="cloud-sun" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Weather Check</h4>
-            <p class="text-sm text-gray-400">See current weather for your destination.</p>
+        <div class="bg-white/5 rounded-xl p-6 border border-white/5 card-hover">
+          <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
           </div>
-        </div>
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="bookmark" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Save Activities</h4>
-            <p class="text-sm text-gray-400">Bookmark restaurants, sights, and experiences.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="users" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Travel Group</h4>
-            <p class="text-sm text-gray-400">Track who's coming and their preferences.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
-          <i data-lucide="smartphone" class="w-6 h-6 text-emerald-400 shrink-0"></i>
-          <div>
-            <h4 class="font-semibold mb-1">Works Everywhere</h4>
-            <p class="text-sm text-gray-400">Access your trips on any device, anytime.</p>
-          </div>
+          <h3 class="font-semibold mb-1">Weather Check</h3>
+          <p class="text-sm text-gray-400">Check weather for any destination.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="py-12 px-6 border-t border-white/5">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <i data-lucide="compass" class="w-5 h-5 text-emerald-400"></i>
-        <span class="font-semibold">TripPilot</span>
-      </div>
-      <p class="text-sm text-gray-500">Your personal trip planner</p>
-    </div>
+  <footer class="py-8 px-4 border-t border-white/5 text-center">
+    <p class="text-sm text-gray-500">TripPilot - Your personal trip planner</p>
   </footer>
 
   <script>
@@ -222,7 +142,6 @@
     function openAuth(tab) {
       document.getElementById('auth-modal').classList.remove('hidden');
       switchAuthTab(tab);
-      lucide.createIcons();
     }
 
     function closeAuth() {
@@ -230,52 +149,48 @@
     }
 
     function switchAuthTab(tab) {
-      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
-      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
-      document.getElementById('auth-tab-signin').className = tab === 'signin' 
-        ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' 
-        : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
-      document.getElementById('auth-tab-signup').className = tab === 'signup' 
-        ? 'flex-1 py-2 rounded-full text-sm font-medium transition bg-emerald-500 text-black' 
-        : 'flex-1 py-2 rounded-full text-sm font-medium transition text-gray-400 hover:text-white';
-      document.getElementById('auth-title').textContent = tab === 'signin' ? 'Welcome back' : 'Create account';
-      document.getElementById('auth-subtitle').textContent = tab === 'signin' ? 'Sign in to access your trips' : 'Start planning your next adventure';
+      const isSignIn = tab === 'signin';
+      document.getElementById('form-signin').classList.toggle('hidden', !isSignIn);
+      document.getElementById('form-signup').classList.toggle('hidden', isSignIn);
+      document.getElementById('auth-tab-signin').className = isSignIn ? 'flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white';
+      document.getElementById('auth-tab-signup').className = !isSignIn ? 'flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white';
+      document.getElementById('auth-title').textContent = isSignIn ? 'Welcome back' : 'Create account';
     }
 
-    async function handleSignIn(e) {
+    async function handleAuth(e, action) {
       e.preventDefault();
+      const btn = action === 'login' ? document.getElementById('btn-signin') : document.getElementById('btn-signup');
+      const originalText = btn.textContent;
+      btn.innerHTML = '<div class="spinner mx-auto"></div>';
+      btn.disabled = true;
+
       const inputs = e.target.querySelectorAll('input');
-      const email = inputs[0].value, password = inputs[1].value;
+      const body = action === 'login'
+        ? { email: inputs[0].value, password: inputs[1].value }
+        : { name: inputs[0].value, email: inputs[1].value, password: inputs[2].value };
+
       try {
-        const res = await fetch(`${API_BASE}/api/auth/login`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+        const res = await fetch(`${API_BASE}/api/auth/${action}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
         });
         const data = await res.json();
-        if (!res.ok) { alert(data.error || 'Login failed'); return; }
+        if (!res.ok) {
+          alert(data.error || `${action} failed`);
+          btn.textContent = originalText;
+          btn.disabled = false;
+          return;
+        }
         localStorage.removeItem('tp_guest');
         localStorage.setItem('tp_token', data.token);
         localStorage.setItem('tp_user', JSON.stringify(data.user));
         window.location.href = 'dashboard.html';
-      } catch (err) { alert('Network error'); }
-    }
-
-    async function handleSignUp(e) {
-      e.preventDefault();
-      const inputs = e.target.querySelectorAll('input');
-      const name = inputs[0].value, email = inputs[1].value, password = inputs[2].value;
-      try {
-        const res = await fetch(`${API_BASE}/api/auth/register`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
-        });
-        const data = await res.json();
-        if (!res.ok) { alert(data.error || 'Sign up failed'); return; }
-        localStorage.removeItem('tp_guest');
-        localStorage.setItem('tp_token', data.token);
-        localStorage.setItem('tp_user', JSON.stringify(data.user));
-        window.location.href = 'dashboard.html';
-      } catch (err) { alert('Network error'); }
+      } catch (err) {
+        alert('Network error. Please try again.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
     }
 
     function continueAsGuest() {
@@ -285,8 +200,9 @@
       window.location.href = 'dashboard.html';
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
+    // Close modal on escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeAuth();
     });
   </script>
 </body>
