@@ -415,14 +415,45 @@
       document.getElementById('auth-subtitle').textContent = isSignIn ? 'Sign in to access your trips' : 'Start planning smarter trips today';
     }
 
-    function handleSignIn(e) {
+    const API_BASE = 'http://localhost:3000';
+
+    async function handleSignIn(e) {
       e.preventDefault();
-      window.location.href = 'dashboard.html';
+      const form = e.target;
+      const email = form.querySelector('input[type="email"]').value;
+      const password = form.querySelector('input[type="password"]').value;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Login failed'); return; }
+        localStorage.setItem('tp_token', data.token);
+        localStorage.setItem('tp_user', JSON.stringify(data.user));
+        window.location.href = 'dashboard.html';
+      } catch (err) { alert('Network error'); }
     }
 
-    function handleSignUp(e) {
+    async function handleSignUp(e) {
       e.preventDefault();
-      window.location.href = 'dashboard.html';
+      const form = e.target;
+      const name = form.querySelector('input[type="text"]').value;
+      const email = form.querySelector('input[type="email"]').value;
+      const password = form.querySelector('input[type="password"]').value;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || 'Sign up failed'); return; }
+        localStorage.setItem('tp_token', data.token);
+        localStorage.setItem('tp_user', JSON.stringify(data.user));
+        window.location.href = 'dashboard.html';
+      } catch (err) { alert('Network error'); }
     }
 
     // Close modal on Escape

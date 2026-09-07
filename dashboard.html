@@ -244,7 +244,7 @@
             <span class="text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10">Adventure</span>
           </div>
         </div>
-        <button onclick="alert('Trip generated! Redirecting to itinerary...')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">
           Generate Smart Itinerary
         </button>
       </div>
@@ -381,7 +381,106 @@
   </main>
 
   <script>
-    lucide.createIcons();
+    const API_BASE = 'http://localhost:3000';
+    let currentUser = null;
+    let currentTrips = [];
+
+    function getToken() { return localStorage.getItem('tp_token'); }
+    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(`${API_BASE}${path}`, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
+      if (res.status === 401) { localStorage.clear(); window.location.href = 'index.html'; }
+      return res;
+    }
+
+    async function loadUser() {
+      const res = await api('/api/auth/me');
+      if (!res.ok) return;
+      currentUser = await res.json();
+      document.querySelector('nav .text-sm.font-medium').textContent = currentUser.name;
+    }
+
+    async function loadTrips() {
+      const res = await api('/api/trips');
+      if (!res.ok) return;
+      currentTrips = await res.json();
+      const container = document.querySelector('#view-trips .grid');
+      if (!container) return;
+      container.innerHTML = currentTrips.map(t => `
+        <div class="bg-dark-lighter rounded-2xl border border-white/5 overflow-hidden card-hover transition">
+          <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-lg">${t.title || 'Untitled Trip'}</h3>
+              <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">${t.status || 'Planning'}</span>
+            </div>
+            <p class="text-sm text-gray-400 mb-3">${t.destination || ''} · ${t.start_date || ''} - ${t.end_date || ''}</p>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function loadActivities() {
+      const res = await api('/api/activities');
+      if (!res.ok) return;
+      const acts = await res.json();
+      const container = document.querySelector('#view-activities .grid');
+      if (!container) return;
+      container.innerHTML = acts.map(a => `
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5 card-hover transition">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0"><i data-lucide="map-pin" class="w-7 h-7 text-emerald-400"></i></div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between"><h3 class="font-semibold">${a.name}</h3><span class="text-xl font-bold text-emerald-400">${a.photo * 10}</span></div>
+              <p class="text-sm text-gray-400 mb-2">${a.city} · ${a.duration} · ${a.price}</p>
+              <div class="flex flex-wrap gap-1">${(a.tags || '').split(',').map(t => `<span class="text-[10px] bg-white/5 px-2 py-1 rounded-full">${t}</span>`).join('')}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function loadWeather() {
+      const res = await api('/api/weather/Chengdu');
+      if (!res.ok) return;
+      const w = await res.json();
+      document.querySelector('#view-weather .grid').innerHTML = `
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5"><i data-lucide="thermometer" class="w-6 h-6 text-emerald-400 mb-2"></i><p class="text-sm text-gray-400">Temperature</p><p class="text-2xl font-bold">${w.temperature}°C</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5"><i data-lucide="droplets" class="w-6 h-6 text-blue-400 mb-2"></i><p class="text-sm text-gray-400">Rain</p><p class="text-2xl font-bold">${w.precipitation}%</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5"><i data-lucide="wind" class="w-6 h-6 text-gray-400 mb-2"></i><p class="text-sm text-gray-400">Wind</p><p class="text-2xl font-bold">${w.wind_speed} km/h</p></div>
+        <div class="bg-dark-lighter rounded-2xl p-5 border border-white/5"><i data-lucide="eye" class="w-6 h-6 text-emerald-400 mb-2"></i><p class="text-sm text-gray-400">Visibility</p><p class="text-2xl font-bold">${w.visibility} km</p></div>
+      `;
+      lucide.createIcons();
+    }
+
+    async function createTrip(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const original = btn.textContent;
+      btn.textContent = 'Generating...';
+      btn.disabled = true;
+      const inputs = e.target.querySelectorAll('input, select');
+      const body = {
+        title: inputs[2]?.value ? `${inputs[2].value} Trip` : 'New Trip',
+        destination: inputs[1]?.value || 'China',
+        city: inputs[1]?.value || '',
+        start_date: inputs[3]?.value || '',
+        end_date: inputs[4]?.value || '',
+        travellers: { adults: 2, teens: 2, children: 1 },
+        style: { pace: 50, budget: 50, popularity: 50 },
+        interests: ['Food','Nature'],
+        status: 'planning'
+      };
+      const res = await api('/api/trips', { method: 'POST', body: JSON.stringify(body) });
+      btn.textContent = original; btn.disabled = false;
+      if (!res.ok) { alert('Failed to create trip'); return; }
+      alert('Trip created!');
+      showView('trips');
+      loadTrips();
+    }
 
     function showView(view) {
       document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
@@ -389,13 +488,24 @@
       document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
       const nav = document.getElementById('nav-' + view);
       if (nav) nav.classList.add('active');
+      if (view === 'trips') loadTrips();
+      if (view === 'activities') loadActivities();
+      if (view === 'weather') loadWeather();
     }
 
     function logout() {
       if (confirm('Sign out?')) {
+        localStorage.clear();
         window.location.href = 'index.html';
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!getToken()) { window.location.href = 'index.html'; return; }
+      loadUser();
+      document.querySelector('#view-plan form')?.addEventListener('submit', createTrip);
+      lucide.createIcons();
+    });
   </script>
 </body>
 </html>

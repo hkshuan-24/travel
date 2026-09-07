@@ -8,7 +8,19 @@
       "created_at": "2026-09-04T08:05:07.244Z"
     }
   ],
-  "trips": [],
+  "trips": [
+    {
+      "id": "f2b44ae5-7668-4609-9115-f5408e2924f8",
+      "user_id": "25b32394-2abe-451b-a91e-8ad8573fead2",
+      "title": "China Family Adventure",
+      "destination": "China",
+      "city": "Chengdu, Zhangjiajie, Guangzhou",
+      "start_date": "2026-12-11",
+      "end_date": "2026-12-29",
+      "status": "planning",
+      "created_at": "2026-09-07T02:12:53.659Z"
+    }
+  ],
   "itinerary": [],
   "activities": [
     {
@@ -160,6 +172,38 @@
       "humidity": 78,
       "visibility": 16,
       "condition": "Clear",
+      "forecast": [
+        {
+          "day": "Tomorrow",
+          "temp": 12,
+          "condition": "Partly Cloudy",
+          "rain": 10
+        },
+        {
+          "day": "+2 days",
+          "temp": 10,
+          "condition": "Light Rain",
+          "rain": 70
+        },
+        {
+          "day": "+3 days",
+          "temp": 14,
+          "condition": "Clear",
+          "rain": 5
+        }
+      ]
+    },
+    {
+      "id": "99724d75-07ea-48d0-8b1f-c7149d590a13",
+      "city": "Chengdu",
+      "date": "2026-09-07",
+      "temperature": 16,
+      "feels_like": 18,
+      "precipitation": 18,
+      "wind_speed": 14,
+      "humidity": 52,
+      "visibility": 9,
+      "condition": "Cloudy",
       "forecast": [
         {
           "day": "Tomorrow",
