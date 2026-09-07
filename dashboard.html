@@ -194,7 +194,7 @@
     <!-- PLAN NEW TRIP -->
     <div id="view-plan" class="max-w-3xl mx-auto space-y-6 hidden">
       <h1 class="text-2xl font-bold">Plan a New Trip</h1>
-      <div class="bg-dark-lighter rounded-2xl p-6 md:p-8 border border-white/5 space-y-6">
+      <form id="plan-form" class="bg-dark-lighter rounded-2xl p-6 md:p-8 border border-white/5 space-y-6">
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="text-sm text-gray-400 mb-1 block">Destination</label>
@@ -247,7 +247,7 @@
         <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition">
           Generate Smart Itinerary
         </button>
-      </div>
+      </form>
     </div>
 
     <!-- EXPLORE -->
@@ -389,7 +389,10 @@
     function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
 
     async function api(path, opts = {}) {
-      const res = await fetch(`${API_BASE}${path}`, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
+      const token = getToken();
+      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      const res = await fetch(`${API_BASE}${path}`, { ...opts, headers });
       if (res.status === 401) { localStorage.clear(); window.location.href = 'index.html'; }
       return res;
     }
@@ -402,6 +405,8 @@
     }
 
     async function loadTrips() {
+      const isGuest = localStorage.getItem('tp_guest') === 'true';
+      if (isGuest) { loadGuestTrips(); return; }
       const res = await api('/api/trips');
       if (!res.ok) return;
       currentTrips = await res.json();
@@ -479,7 +484,7 @@
       if (!getToken() && !isGuest) { window.location.href = 'index.html'; return; }
       if (!isGuest) loadUser();
       else setupGuestMode();
-      document.querySelector('#view-plan form')?.addEventListener('submit', createTrip);
+      document.querySelector('#plan-form')?.addEventListener('submit', createTrip);
       lucide.createIcons();
     });
 
