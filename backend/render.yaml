@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: trippilot-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: '*'  # Change to your frontend URL in production
