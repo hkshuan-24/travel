@@ -344,6 +344,139 @@ app.get('/api/cities', (req, res) => {
   res.json(cities);
 });
 
+// ============== AUTO TRIP GENERATOR ==============
+
+app.post('/api/trips/generate', auth, (req, res) => {
+  const { city, start_date, end_date, travellers, interests } = req.body;
+  if (!city || !start_date || !end_date) {
+    return res.status(400).json({ error: 'City, start date, and end date required' });
+  }
+
+  const start = new Date(start_date);
+  const end = new Date(end_date);
+  const dayCount = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
+
+  // Get activities for this city
+  let cityActivities = db.data.activities.filter(a => a.city === city);
+  if (cityActivities.length === 0) {
+    return res.status(404).json({ error: 'No activities found for this city' });
+  }
+
+  // Score activities
+  const scored = cityActivities.map(a => {
+    let score = 50;
+    // Interest match
+    if (interests && interests.length > 0) {
+      const actTags = (a.tags || '').split(',');
+      const matchCount = interests.filter(i => actTags.some(t => t.trim().toLowerCase() === i.toLowerCase())).length;
+      score += matchCount * 15;
+    }
+    // Family friendly boost
+    if (travellers && (travellers.children > 0 || travellers.teens > 0) && a.family) score += 10;
+    // Photo/popularity boost
+    score += (a.photo || 5) * 3;
+    // Weather sensitivity penalty (will check weather later)
+    if (a.weather_sensitivity === 'High') score -= 5;
+    return { ...a, match_score: Math.min(score, 99) };
+  });
+
+  scored.sort((a, b) => b.match_score - a.match_score);
+
+  // Get weather for the city
+  const today = new Date().toISOString().split('T')[0];
+  let weather = db.data.weather.find(w => w.city === city && w.date === today);
+
+  // Build itinerary day by day
+  const itinerary = [];
+  const usedActivities = new Set();
+  const dailySchedule = [
+    { time: '09:00', label: 'Morning' },
+    { time: '12:00', label: 'Lunch' },
+    { time: '14:00', label: 'Afternoon' },
+    { time: '18:00', label: 'Dinner' },
+    { time: '20:00', label: 'Evening' }
+  ];
+
+  for (let day = 0; day < dayCount; day++) {
+    const currentDate = new Date(start);
+    currentDate.setDate(start.getDate() + day);
+    const dateStr = currentDate.toISOString().split('T')[0];
+
+    // Pick top activities for this day (not used yet)
+    const dayActivities = scored.filter(a => !usedActivities.has(a.id)).slice(0, 3);
+    dayActivities.forEach(a => usedActivities.add(a.id));
+
+    // If rain is predicted, skip high weather sensitivity activities
+    const dayWeather = weather || { precipitation: 0 };
+    const isRainy = dayWeather.precipitation > 50;
+
+    dayActivities.forEach((activity, idx) => {
+      if (isRainy && activity.weather_sensitivity === 'High') return;
+      const slot = dailySchedule[idx] || dailySchedule[0];
+      itinerary.push({
+        id: uuidv4(),
+        trip_id: null, // will be set after trip creation
+        title: activity.name,
+        time: slot.time,
+        day: day + 1,
+        date: dateStr,
+        completed: false,
+        activity_id: activity.id,
+        notes: activity.description || ''
+      });
+    });
+
+    // Add meal slots
+    itinerary.push({
+      id: uuidv4(),
+      trip_id: null,
+      title: 'Lunch',
+      time: '12:30',
+      day: day + 1,
+      date: dateStr,
+      completed: false,
+      activity_id: null,
+      notes: 'Try local cuisine'
+    });
+    itinerary.push({
+      id: uuidv4(),
+      trip_id: null,
+      title: 'Dinner',
+      time: '19:00',
+      day: day + 1,
+      date: dateStr,
+      completed: false,
+      activity_id: null,
+      notes: 'Evening meal'
+    });
+  }
+
+  // Create the trip
+  const trip = {
+    id: uuidv4(),
+    user_id: req.user.id,
+    title: city + ' Trip',
+    destination: 'China',
+    city: city,
+    start_date: start_date,
+    end_date: end_date,
+    travellers: travellers || { adults: 1, teens: 0, children: 0 },
+    interests: interests || [],
+    status: 'planned',
+    created_at: new Date().toISOString()
+  };
+  db.data.trips.push(trip);
+
+  // Save itinerary items
+  itinerary.forEach(item => {
+    item.trip_id = trip.id;
+    db.data.itinerary.push(item);
+  });
+
+  db.write();
+  res.status(201).json({ ...trip, itinerary });
+});
+
 // ============== RECOMMENDATIONS ==============
 
 app.post('/api/recommendations', (req, res) => {
