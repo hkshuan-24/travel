@@ -46,41 +46,10 @@
         <span class="text-lg font-semibold">TripPilot</span>
       </a>
       <div class="flex items-center gap-3">
-        <button onclick="showAuth()" id="auth-btn" class="btn-primary text-sm px-4 py-2 rounded-lg">Sign In</button>
+        <a href="dashboard.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
       </div>
     </div>
   </nav>
-
-  <!-- Auth Modal -->
-  <div id="auth-modal" class="fixed inset-0 z-[100] hidden" onclick="if(event.target===this)closeAuth()">
-    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-      <div class="bg-dark-lighter rounded-2xl border border-white/10 w-full max-w-sm p-6" style="animation: toastIn 0.3s ease-out;">
-        <div class="text-center mb-6">
-          <h2 id="auth-title" class="text-xl font-bold">Sign In</h2>
-          <p class="text-sm text-gray-400 mt-1">Sign in to save your generated trips</p>
-        </div>
-        <div class="flex bg-white/5 rounded-lg p-1 mb-4">
-          <button onclick="switchAuthTab('signin')" id="auth-tab-signin" class="flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black">Sign In</button>
-          <button onclick="switchAuthTab('signup')" id="auth-tab-signup" class="flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white">Sign Up</button>
-        </div>
-        <form id="form-signin" class="space-y-3" onsubmit="handleAuth(event, 'login')">
-          <input type="email" placeholder="Email" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
-          <input type="password" placeholder="Password" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
-          <button type="submit" id="btn-signin" class="w-full btn-primary py-3 rounded-lg text-sm">Sign In</button>
-        </form>
-        <form id="form-signup" class="space-y-3 hidden" onsubmit="handleAuth(event, 'register')">
-          <input type="text" placeholder="Full Name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
-          <input type="email" placeholder="Email" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
-          <input type="password" placeholder="Password (min 8)" minlength="8" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm">
-          <button type="submit" id="btn-signup" class="w-full btn-primary py-3 rounded-lg text-sm">Create Account</button>
-        </form>
-        <div class="mt-4 pt-4 border-t border-white/10 text-center">
-          <button onclick="closeAuth();setGuestMode()" class="text-emerald-400 hover:text-emerald-300 text-sm">Continue without signing in</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Main Content -->
   <main class="pt-24 pb-12 px-4">
@@ -186,18 +155,6 @@
     const API_BASE = window.location.origin;
     let selectedInterests = ['Food', 'Nature', 'History'];
 
-    // Check auth status
-    function updateAuthUI() {
-      const token = localStorage.getItem('tp_token');
-      const btn = document.getElementById('auth-btn');
-      if (token) {
-        const user = JSON.parse(localStorage.getItem('tp_user') || '{}');
-        btn.textContent = user.name || 'Account';
-        btn.onclick = () => window.location.href = 'dashboard.html';
-      }
-    }
-    updateAuthUI();
-
     // Interest tags
     document.querySelectorAll('.interest-tag').forEach(tag => {
       tag.addEventListener('click', function() {
@@ -208,38 +165,9 @@
       });
     });
 
-    function showAuth() { document.getElementById('auth-modal').classList.remove('hidden'); }
-    function closeAuth() { document.getElementById('auth-modal').classList.add('hidden'); }
-    function setGuestMode() { localStorage.setItem('tp_guest', 'true'); showToast('Guest mode enabled', 'success'); }
-
-    function switchAuthTab(tab) {
-      const isSignIn = tab === 'signin';
-      document.getElementById('form-signin').classList.toggle('hidden', !isSignIn);
-      document.getElementById('form-signup').classList.toggle('hidden', isSignIn);
-      document.getElementById('auth-tab-signin').className = isSignIn ? 'flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white';
-      document.getElementById('auth-tab-signup').className = !isSignIn ? 'flex-1 py-2 rounded-md text-sm font-medium transition bg-emerald-500 text-black' : 'flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white';
-      document.getElementById('auth-title').textContent = isSignIn ? 'Sign In' : 'Create Account';
-    }
-
     function showToast(msg, type) {
       const existing = document.querySelector('.toast'); if (existing) existing.remove();
       const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
-    }
-
-    async function handleAuth(e, action) {
-      e.preventDefault();
-      const btn = action === 'login' ? document.getElementById('btn-signin') : document.getElementById('btn-signup');
-      const originalText = btn.textContent;
-      btn.innerHTML = '<span class="spinner mr-2"></span>Loading...'; btn.disabled = true;
-      const inputs = e.target.querySelectorAll('input');
-      const body = action === 'login' ? { email: inputs[0].value, password: inputs[1].value } : { name: inputs[0].value, email: inputs[1].value, password: inputs[2].value };
-      try {
-        const res = await fetch(`${API_BASE}/api/auth/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const data = await res.json();
-        if (!res.ok) { showToast(data.error || 'Failed', 'error'); btn.textContent = originalText; btn.disabled = false; return; }
-        localStorage.removeItem('tp_guest'); localStorage.setItem('tp_token', data.token); localStorage.setItem('tp_user', JSON.stringify(data.user));
-        showToast('Success!', 'success'); setTimeout(() => { closeAuth(); updateAuthUI(); loadTripsPreview(); }, 500);
-      } catch (err) { showToast('Network error', 'error'); btn.textContent = originalText; btn.disabled = false; }
     }
 
     // Generate trip
@@ -260,28 +188,9 @@
         interests: selectedInterests
       };
 
-      const token = localStorage.getItem('tp_token');
-      const isGuest = localStorage.getItem('tp_guest') === 'true';
-
-      if (!token && !isGuest) {
-        // Store form data and prompt for auth/guest
-        localStorage.setItem('tp_pending_trip', JSON.stringify(body));
-        showAuth();
-        btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
-        return;
-      }
-
       try {
-        if (isGuest || !token) {
-          // Guest mode - show preview
-          showToast('Trip preview generated! Sign in to save.', 'success');
-          btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
-          window.location.href = 'dashboard.html?generated=1&city=' + encodeURIComponent(city) + '&start=' + start + '&end=' + end;
-          return;
-        }
-
         const res = await fetch(`${API_BASE}/api/trips/generate`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body)
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
         });
         if (!res.ok) { showToast('Failed to generate trip', 'error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
         const trip = await res.json();
@@ -294,11 +203,9 @@
     });
 
     async function loadTripsPreview() {
-      const token = localStorage.getItem('tp_token');
       const container = document.getElementById('trips-preview');
-      if (!token) { container.innerHTML = '<div class="text-center text-gray-500 py-8">Sign in to see your saved trips</div>'; return; }
       try {
-        const res = await fetch(`${API_BASE}/api/trips`, { headers: { 'Authorization': 'Bearer ' + token } });
+        const res = await fetch(`${API_BASE}/api/trips`);
         if (!res.ok) return;
         const trips = await res.json();
         if (trips.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>'; return; }
@@ -312,16 +219,6 @@
           </div>
         `).join('');
       } catch (err) {}
-    }
-
-    // Check for pending trip after auth
-    const pending = localStorage.getItem('tp_pending_trip');
-    if (pending) {
-      const p = JSON.parse(pending);
-      document.getElementById('gen-city').value = p.city;
-      document.getElementById('gen-start').value = p.start_date;
-      document.getElementById('gen-end').value = p.end_date;
-      localStorage.removeItem('tp_pending_trip');
     }
 
     loadTripsPreview();
