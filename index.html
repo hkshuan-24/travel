@@ -421,7 +421,7 @@
       document.getElementById('auth-subtitle').textContent = isSignIn ? 'Sign in to access your trips' : 'Start planning smarter trips today';
     }
 
-    const API_BASE = 'https://travel-r5tx.onrender.com';
+    const API_BASE = window.location.origin;
 
     async function handleSignIn(e) {
       e.preventDefault();
