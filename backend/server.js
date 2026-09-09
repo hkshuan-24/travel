@@ -524,3 +524,4 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`TripPilot API on port ${PORT}`);
 });
+
