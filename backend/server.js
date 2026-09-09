@@ -13,7 +13,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || '*';
 
 app.use(cors({ origin: FRONTEND_URL }));
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 function auth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
