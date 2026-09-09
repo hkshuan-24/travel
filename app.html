@@ -84,11 +84,7 @@
         <i data-lucide="star" class="w-4 h-4"></i> Activities
       </button>
     </div>
-    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5">
-      <button onclick="logout()" class="sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-500/10">
-        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-      </button>
-    </div>
+
   </aside>
 
   <!-- Mobile Nav -->
@@ -385,28 +381,14 @@
     let currentUser = null;
     let currentTrips = [];
 
-    function getToken() { return localStorage.getItem('tp_token'); }
-    function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
-
     async function api(path, opts = {}) {
-      const token = getToken();
       const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-      if (token) headers['Authorization'] = 'Bearer ' + token;
       const res = await fetch(`${API_BASE}${path}`, { ...opts, headers });
-      if (res.status === 401) { localStorage.clear(); window.location.href = 'index.html'; }
       return res;
     }
 
-    async function loadUser() {
-      const res = await api('/api/auth/me');
-      if (!res.ok) return;
-      currentUser = await res.json();
-      document.querySelector('nav .text-sm.font-medium').textContent = currentUser.name;
-    }
-
     async function loadTrips() {
-      const isGuest = localStorage.getItem('tp_guest') === 'true';
-      if (isGuest) { loadGuestTrips(); return; }
+      
       const res = await api('/api/trips');
       if (!res.ok) return;
       currentTrips = await res.json();
@@ -476,48 +458,15 @@
       if (view === 'weather') loadWeather();
     }
 
-    function logout() {
-      if (confirm('Sign out?')) {
-        localStorage.clear();
-        window.location.href = 'index.html';
-      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const isGuest = localStorage.getItem('tp_guest') === 'true';
-      if (!getToken() && !isGuest) { window.location.href = 'index.html'; return; }
-      if (!isGuest) loadUser();
-      else setupGuestMode();
+      showView('today');
       document.querySelector('#plan-form')?.addEventListener('submit', createTrip);
       lucide.createIcons();
     });
 
-    function setupGuestMode() {
-      document.querySelector('nav .text-sm.font-medium').textContent = 'Guest';
-      document.querySelector('nav .text-xs.text-gray-400').textContent = 'Guest Mode';
-      const banner = document.createElement('div');
-      banner.id = 'guest-banner';
-      banner.className = 'fixed top-[57px] left-0 right-0 z-35 bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 text-center text-sm text-amber-400';
-      banner.innerHTML = 'Guest Mode — <button onclick="openAuthFromGuest()" class="underline hover:text-amber-300">Sign in or create an account</button> to save your trips';
-      document.body.appendChild(banner);
-      document.querySelector('main').style.paddingTop = '88px';
-      loadGuestTrips();
-    }
-
-    function openAuthFromGuest() {
-      localStorage.removeItem('tp_guest');
-      window.location.href = 'index.html';
-    }
-
-    function loadGuestTrips() {
-      const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
-      const container = document.querySelector('#view-trips .grid');
-      if (!container) return;
-      if (trips.length === 0) {
-        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-12">No trips yet. Click "New Trip" to start planning.</div>';
-        return;
-      }
-      container.innerHTML = trips.map((t, i) => `
+    container.innerHTML = trips.map((t, i) => `
         <div class="bg-dark-lighter rounded-2xl border border-white/5 overflow-hidden card-hover transition">
           <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
           <div class="p-5">
@@ -526,23 +475,12 @@
               <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">Planning</span>
             </div>
             <p class="text-sm text-gray-400 mb-3">${t.city || ''} · ${t.start_date || ''} - ${t.end_date || ''}</p>
-            <button onclick="deleteGuestTrip(${i})" class="text-xs text-red-400 hover:text-red-300">Delete</button>
-          </div>
-        </div>
-      `).join('');
+          `).join('');
       lucide.createIcons();
-    }
-
-    function deleteGuestTrip(index) {
-      const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
-      trips.splice(index, 1);
-      localStorage.setItem('tp_guest_trips', JSON.stringify(trips));
-      loadGuestTrips();
     }
 
     async function createTrip(e) {
       e.preventDefault();
-      const isGuest = localStorage.getItem('tp_guest') === 'true';
       const btn = e.target.querySelector('button[type="submit"]');
       const original = btn.textContent;
       btn.textContent = 'Generating...';
@@ -559,17 +497,6 @@
         interests: ['Food','Nature'],
         status: 'planning'
       };
-
-      if (isGuest) {
-        const trips = JSON.parse(localStorage.getItem('tp_guest_trips') || '[]');
-        trips.push({ ...body, id: 'guest_' + Date.now(), created_at: new Date().toISOString() });
-        localStorage.setItem('tp_guest_trips', JSON.stringify(trips));
-        btn.textContent = original; btn.disabled = false;
-        alert('Trip saved locally! Sign in to sync to your account.');
-        showView('trips');
-        loadGuestTrips();
-        return;
-      }
 
       const res = await api('/api/trips', { method: 'POST', body: JSON.stringify(body) });
       btn.textContent = original; btn.disabled = false;
