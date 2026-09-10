@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripPilot - AI Trip Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { DEFAULT: '#0a0f0e', lighter: '#111815', card: '#0d1211' },
+            emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #0a0f0e; color: white; -webkit-font-smoothing: antialiased; font-family: 'Inter', system-ui, sans-serif; }
+    .glass { background: rgba(10,15,14,0.9); backdrop-filter: blur(16px); }
+    .card-hover { transition: all 0.2s ease; }
+    .card-hover:hover { border-color: rgba(16,185,129,0.3); }
+    .btn-primary { background: #10b981; color: #000; font-weight: 600; transition: all 0.2s; }
+    .btn-primary:hover { background: #059669; }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+    input:focus, select:focus { outline: none; border-color: #10b981; }
+    .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: #10b981; border-radius: 50%; width: 18px; height: 18px; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; padding: 12px 20px; border-radius: 12px; font-size: 14px; animation: toastIn 0.3s ease-out; }
+    .toast.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #34d399; }
+    .toast.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="min-h-screen" style="background: linear-gradient(135deg, #0a0f0e 0%, #0d1f1a 40%, #111815 100%);">
+
+  <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="./" class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        <span class="text-lg font-semibold">TripPilot</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-24 pb-12 px-4">
+    <div class="max-w-2xl mx-auto">
+      <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-3">Plan Your Trip<br><span class="text-emerald-400">Automatically</span></h1>
+        <p class="text-gray-400 text-lg">Tell us where and when. We'll build your day-by-day itinerary with real activities, restaurants, and weather-aware planning.</p>
+      </div>
+
+      <div class="bg-dark-lighter rounded-2xl p-6 md:p-8 border border-white/5">
+        <h2 class="text-lg font-semibold mb-5 flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Generate Your Trip
+        </h2>
+        <form id="generate-form" class="space-y-4">
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Destination City</label>
+            <select id="gen-city" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm">
+              <option value="">Choose a city...</option>
+              <option>Beijing</option><option>Shanghai</option><option>Chengdu</option>
+              <option>Guangzhou</option><option>Shenzhen</option><option>Xi'an</option>
+              <option>Hangzhou</option><option>Guilin</option><option>Zhangjiajie</option>
+              <option>Suzhou</option><option>Hong Kong</option><option>Lijiang</option>
+              <option>Huangshan</option><option>Nanjing</option><option>Chongqing</option>
+            </select>
+          </div>
+          <div class="grid md:grid-cols-2 gap-3">
+            <div><label class="text-sm text-gray-400 mb-1 block">Start Date</label><input type="date" id="gen-start" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"></div>
+            <div><label class="text-sm text-gray-400 mb-1 block">End Date</label><input type="date" id="gen-end" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"></div>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-1 block">Travellers</label>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-adults" value="2" min="1" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Adults</p></div>
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-teens" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Teens</p></div>
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-children" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Kids</p></div>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-2 block">What do you like?</label>
+            <div class="flex flex-wrap gap-2" id="interests-tags">
+              <span class="interest-tag text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full cursor-pointer" data-tag="Food">Food</span>
+              <span class="interest-tag text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full cursor-pointer" data-tag="Nature">Nature</span>
+              <span class="interest-tag text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full cursor-pointer" data-tag="History">History</span>
+              <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Shopping">Shopping</span>
+              <span class="interest-tag text-xs bg-white/5 text-gray-400 px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/10" data-tag="Adventure">Adventure</span>
+            </div>
+          </div>
+          <button type="submit" id="gen-submit" class="w-full btn-primary py-4 rounded-lg text-base">
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Your Trips</h2>
+          <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 text-sm">View All</a>
+        </div>
+        <div id="trips-preview" class="space-y-3"><div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-8 px-4 border-t border-white/5 text-center">
+    <p class="text-sm text-gray-500">TripPilot - AI-powered trip planning for China</p>
+  </footer>
+
+<script>
+const ACTIVITIES = {
+  Beijing: [
+    {name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'¥40-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'¥60',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'¥35',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'¥30',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'¥200-400',photo:9}
+  ],
+  Shanghai: [
+    {name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'¥180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'¥40',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}
+  ],
+  Chengdu: [
+    {name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'¥55',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}
+  ],
+  Guangzhou: [
+    {name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'¥150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'¥80-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'¥10',photo:7}
+  ],
+  Shenzhen: [
+    {name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'¥220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}
+  ],
+  "Xi'an": [
+    {name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'¥120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'¥54',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'¥50',photo:7}
+  ],
+  Hangzhou: [
+    {name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'¥75',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}
+  ],
+  Guilin: [
+    {name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'¥300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'¥90',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'¥75',photo:7}
+  ],
+  Zhangjiajie: [
+    {name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'¥225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'¥141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'¥258',photo:8}
+  ],
+  Suzhou: [
+    {name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'¥70',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'¥60',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}
+  ],
+  "Hong Kong": [
+    {name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'¥150-300',photo:9}
+  ],
+  Lijiang: [
+    {name:'Old Town',tags:'History,Food',duration:'Half Day',price:'¥50',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'¥130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'¥65',photo:8}
+  ],
+  Huangshan: [
+    {name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'¥190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'¥298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'¥104',photo:8}
+  ],
+  Nanjing: [
+    {name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'¥30',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'¥30',photo:7}
+  ],
+  Chongqing: [
+    {name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'¥140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'¥2000+',photo:8}
+  ]
+};
+
+const WEATHER = {
+  Beijing: {temperature:22,precipitation:10,wind_speed:12,visibility:10,condition:'Sunny'},
+  Shanghai: {temperature:26,precipitation:30,wind_speed:15,visibility:8,condition:'Partly Cloudy'},
+  Chengdu: {temperature:24,precipitation:45,wind_speed:8,visibility:7,condition:'Cloudy'},
+  Guangzhou: {temperature:30,precipitation:60,wind_speed:10,visibility:9,condition:'Humid'},
+  Shenzhen: {temperature:31,precipitation:55,wind_speed:12,visibility:9,condition:'Humid'},
+  "Xi'an": {temperature:23,precipitation:15,wind_speed:10,visibility:9,condition:'Sunny'},
+  Hangzhou: {temperature:25,precipitation:35,wind_speed:10,visibility:8,condition:'Partly Cloudy'},
+  Guilin: {temperature:28,precipitation:40,wind_speed:8,visibility:8,condition:'Partly Cloudy'},
+  Zhangjiajie: {temperature:22,precipitation:30,wind_speed:10,visibility:7,condition:'Cloudy'},
+  Suzhou: {temperature:25,precipitation:25,wind_speed:10,visibility:8,condition:'Partly Cloudy'},
+  "Hong Kong": {temperature:29,precipitation:50,wind_speed:18,visibility:8,condition:'Humid'},
+  Lijiang: {temperature:18,precipitation:20,wind_speed:8,visibility:10,condition:'Sunny'},
+  Huangshan: {temperature:16,precipitation:35,wind_speed:15,visibility:6,condition:'Foggy'},
+  Nanjing: {temperature:24,precipitation:20,wind_speed:10,visibility:9,condition:'Sunny'},
+  Chongqing: {temperature:27,precipitation:40,wind_speed:8,visibility:6,condition:'Foggy'}
+};
+
+function getTrips() { return JSON.parse(localStorage.getItem('tp_trips') || '[]'); }
+function saveTrips(trips) { localStorage.setItem('tp_trips', JSON.stringify(trips)); }
+function genId() { return 'trip_' + Date.now() + '_' + Math.random().toString(36).substr(2,9); }
+
+function generateItinerary(city, start, end, interests) {
+  const acts = ACTIVITIES[city] || [];
+  const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1);
+  const itin = [];
+  for (let d = 0; d < days; d++) {
+    const dayActs = acts.filter(a => interests.some(i => a.tags.includes(i))).slice(0,3);
+    if (dayActs.length === 0) dayActs.push(...acts.slice(0,3));
+    dayActs.forEach((a, idx) => {
+      itin.push({ title: a.name, time: ['09:00','14:00','19:00'][idx] || '10:00', completed: false, day: d+1, id: 'item_' + Date.now() + '_' + idx + '_' + d });
+    });
+  }
+  return itin;
+}
+
+let selectedInterests = ['Food','Nature','History'];
+document.querySelectorAll('.interest-tag').forEach(tag => {
+  tag.addEventListener('click', function() {
+    const t = this.dataset.tag;
+    const idx = selectedInterests.indexOf(t);
+    if (idx > -1) { selectedInterests.splice(idx, 1); this.classList.remove('bg-emerald-500/20','text-emerald-400'); this.classList.add('bg-white/5','text-gray-400'); }
+    else { selectedInterests.push(t); this.classList.remove('bg-white/5','text-gray-400'); this.classList.add('bg-emerald-500/20','text-emerald-400'); }
+  });
+});
+
+function showToast(msg, type) {
+  const existing = document.querySelector('.toast'); if (existing) existing.remove();
+  const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+
+function loadTripsPreview() {
+  const container = document.getElementById('trips-preview');
+  const trips = getTrips();
+  if (trips.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>'; return; }
+  container.innerHTML = trips.slice(0,3).map(t => `
+    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="window.location.href='dashboard.html?trip=${t.id}'">
+      <div class="flex items-center justify-between"><h3 class="font-semibold">${t.title}</h3><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span></div>
+      <p class="text-sm text-gray-400 mt-1">${t.city} · ${new Date(t.start_date).toLocaleDateString()} - ${new Date(t.end_date).toLocaleDateString()}</p>
+    </div>`).join('');
+}
+
+document.getElementById('generate-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('gen-submit');
+  btn.innerHTML = '<span class="spinner mr-2"></span>Generating your trip...'; btn.disabled = true;
+  const city = document.getElementById('gen-city').value;
+  const start = document.getElementById('gen-start').value;
+  const end = document.getElementById('gen-end').value;
+  if (!city || !start || !end) { showToast('Please fill in all fields','error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
+  if (new Date(start) > new Date(end)) { showToast('Start date must be before end date','error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
+
+  const trip = {
+    id: genId(), title: city + ' Trip', city, destination: 'China',
+    start_date: start, end_date: end,
+    travellers: { adults: parseInt(document.getElementById('gen-adults').value)||1, teens: parseInt(document.getElementById('gen-teens').value)||0, children: parseInt(document.getElementById('gen-children').value)||0 },
+    interests: [...selectedInterests], status: 'planning', created_at: new Date().toISOString(),
+    itinerary: generateItinerary(city, start, end, selectedInterests)
+  };
+  const trips = getTrips(); trips.unshift(trip); saveTrips(trips);
+  showToast('Trip generated!','success'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
+  loadTripsPreview();
+  document.getElementById('trips-preview').scrollIntoView({behavior:'smooth'});
+});
+
+loadTripsPreview();
+</script>
+</body>
+</html>
