@@ -67,14 +67,31 @@
         <form id="generate-form" class="space-y-4">
           <div>
             <label class="text-sm text-gray-400 mb-1 block">Destination City</label>
-            <select id="gen-city" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm">
-              <option value="">Choose a city...</option>
-              <option>Beijing</option><option>Shanghai</option><option>Chengdu</option>
-              <option>Guangzhou</option><option>Shenzhen</option><option>Xi'an</option>
-              <option>Hangzhou</option><option>Guilin</option><option>Zhangjiajie</option>
-              <option>Suzhou</option><option>Hong Kong</option><option>Lijiang</option>
-              <option>Huangshan</option><option>Nanjing</option><option>Chongqing</option>
-            </select>
+            <div class="relative" id="city-dropdown-wrapper">
+              <button type="button" id="city-dropdown-btn" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-left text-white text-sm flex items-center justify-between" onclick="toggleCityDropdown()">
+                <span id="city-selected">Choose a city...</span>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div id="city-dropdown" class="hidden absolute z-50 w-full mt-1 bg-[#111815] border border-white/10 rounded-lg max-h-60 overflow-y-auto shadow-xl">
+                <div class="px-4 py-2 text-sm text-gray-400 hover:bg-white/5 cursor-pointer" onclick="selectCity('')">Choose a city...</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Beijing')">Beijing</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Shanghai')">Shanghai</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Chengdu')">Chengdu</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Guangzhou')">Guangzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Shenzhen')">Shenzhen</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Xi\'an')">Xi'an</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Hangzhou')">Hangzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Guilin')">Guilin</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Zhangjiajie')">Zhangjiajie</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Suzhou')">Suzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Hong Kong')">Hong Kong</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Lijiang')">Lijiang</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Huangshan')">Huangshan</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Nanjing')">Nanjing</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Chongqing')">Chongqing</div>
+              </div>
+              <input type="hidden" id="gen-city" required>
+            </div>
           </div>
           <div class="grid md:grid-cols-2 gap-3">
             <div><label class="text-sm text-gray-400 mb-1 block">Start Date</label><input type="date" id="gen-start" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"></div>
@@ -250,6 +267,22 @@ document.getElementById('generate-form').addEventListener('submit', function(e) 
   showToast('Trip generated!','success'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
   loadTripsPreview();
   document.getElementById('trips-preview').scrollIntoView({behavior:'smooth'});
+});
+
+function toggleCityDropdown() {
+  const dd = document.getElementById('city-dropdown');
+  dd.classList.toggle('hidden');
+}
+function selectCity(city) {
+  document.getElementById('gen-city').value = city;
+  document.getElementById('city-selected').textContent = city || 'Choose a city...';
+  document.getElementById('city-dropdown').classList.add('hidden');
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('city-dropdown-wrapper');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('city-dropdown').classList.add('hidden');
+  }
 });
 
 loadTripsPreview();
