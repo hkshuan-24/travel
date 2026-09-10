@@ -50,7 +50,7 @@
         <span class="text-lg font-semibold">TripPilot</span>
       </a>
       <div class="flex items-center gap-3">
-        <a href="dashboard.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
+        <a href="dashboard.html?v=3" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
       </div>
     </div>
   </nav>
@@ -127,7 +127,7 @@
       <div class="mt-10">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-bold">Your Trips</h2>
-          <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 text-sm">View All</a>
+          <a href="dashboard.html?v=3" class="text-emerald-400 hover:text-emerald-300 text-sm">View All</a>
         </div>
         <div id="trips-preview" class="space-y-3"><div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div></div>
       </div>
@@ -141,49 +141,49 @@
 <script>
 const ACTIVITIES = {
   Beijing: [
-    {name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'¥40-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'¥60',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'¥35',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'¥30',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'¥200-400',photo:9}
+    {name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'\u00a540-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'\u00a560',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'\u00a535',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'\u00a530',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'\u00a5200-400',photo:9}
   ],
   Shanghai: [
-    {name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'¥180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'¥40',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}
+    {name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'\u00a540',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}
   ],
   Chengdu: [
-    {name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'¥55',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}
+    {name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'\u00a555',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}
   ],
   Guangzhou: [
-    {name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'¥150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'¥80-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'¥10',photo:7}
+    {name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'\u00a580-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'\u00a510',photo:7}
   ],
   Shenzhen: [
-    {name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'¥220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}
+    {name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'\u00a5220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}
   ],
   "Xi'an": [
-    {name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'¥120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'¥54',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'¥50',photo:7}
+    {name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'\u00a5120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'\u00a554',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'\u00a550',photo:7}
   ],
   Hangzhou: [
-    {name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'¥75',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}
+    {name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'\u00a575',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}
   ],
   Guilin: [
-    {name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'¥300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'¥90',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'¥75',photo:7}
+    {name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'\u00a5300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'\u00a590',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'\u00a575',photo:7}
   ],
   Zhangjiajie: [
-    {name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'¥225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'¥141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'¥258',photo:8}
+    {name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'\u00a5141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'\u00a5258',photo:8}
   ],
   Suzhou: [
-    {name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'¥70',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'¥60',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}
+    {name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'\u00a570',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'\u00a560',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}
   ],
   "Hong Kong": [
-    {name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'¥150-300',photo:9}
+    {name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'\u00a5150-300',photo:9}
   ],
   Lijiang: [
-    {name:'Old Town',tags:'History,Food',duration:'Half Day',price:'¥50',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'¥130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'¥65',photo:8}
+    {name:'Old Town',tags:'History,Food',duration:'Half Day',price:'\u00a550',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a565',photo:8}
   ],
   Huangshan: [
-    {name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'¥190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'¥298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'¥104',photo:8}
+    {name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'\u00a5190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'\u00a5298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'\u00a5104',photo:8}
   ],
   Nanjing: [
-    {name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'¥30',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'¥30',photo:7}
+    {name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'\u00a530',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'\u00a530',photo:7}
   ],
   Chongqing: [
-    {name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'¥140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'¥2000+',photo:8}
+    {name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'\u00a5140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'\u00a52000+',photo:8}
   ]
 };
 
@@ -214,9 +214,13 @@ function generateItinerary(city, start, end, interests) {
   const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1);
   const itin = [];
   for (let d = 0; d < days; d++) {
-    const dayActs = acts.filter(a => interests.some(i => a.tags.includes(i))).slice(0,3);
-    if (dayActs.length === 0) dayActs.push(...acts.slice(0,3));
-    dayActs.forEach((a, idx) => {
+    let dayActs = acts.filter(a => interests.some(i => a.tags.includes(i)));
+    if (dayActs.length === 0) dayActs = acts.slice();
+    // rotate starting position per day for variety
+    const offset = (d * 2) % Math.max(1, dayActs.length);
+    const rotated = dayActs.slice(offset).concat(dayActs.slice(0, offset));
+    const picks = rotated.slice(0, 3);
+    picks.forEach((a, idx) => {
       itin.push({ title: a.name, time: ['09:00','14:00','19:00'][idx] || '10:00', completed: false, day: d+1, id: 'item_' + Date.now() + '_' + idx + '_' + d });
     });
   }
@@ -243,9 +247,9 @@ function loadTripsPreview() {
   const trips = getTrips();
   if (trips.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>'; return; }
   container.innerHTML = trips.slice(0,3).map(t => `
-    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="window.location.href='dashboard.html?trip=${t.id}'">
+    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="window.location.href='dashboard.html?v=3&trip=${t.id}'">
       <div class="flex items-center justify-between"><h3 class="font-semibold">${t.title}</h3><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span></div>
-      <p class="text-sm text-gray-400 mt-1">${t.city} · ${new Date(t.start_date).toLocaleDateString()} - ${new Date(t.end_date).toLocaleDateString()}</p>
+      <p class="text-sm text-gray-400 mt-1">${t.city} \u00b7 ${new Date(t.start_date).toLocaleDateString()} - ${new Date(t.end_date).toLocaleDateString()}</p>
     </div>`).join('');
 }
 
@@ -256,8 +260,8 @@ document.getElementById('generate-form').addEventListener('submit', function(e) 
   const city = document.getElementById('gen-city').value;
   const start = document.getElementById('gen-start').value;
   const end = document.getElementById('gen-end').value;
-  if (!city || !start || !end) { showToast('Please fill in all fields','error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
-  if (new Date(start) > new Date(end)) { showToast('Start date must be before end date','error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
+  if (!city || !start || !end) { showToast('Please fill in all fields','error'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false; return; }
+  if (new Date(start) > new Date(end)) { showToast('Start date must be before end date','error'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false; return; }
 
   const trip = {
     id: genId(), title: city + ' Trip', city, destination: 'China',
@@ -267,9 +271,10 @@ document.getElementById('generate-form').addEventListener('submit', function(e) 
     itinerary: generateItinerary(city, start, end, selectedInterests)
   };
   const trips = getTrips(); trips.unshift(trip); saveTrips(trips);
-  showToast('Trip generated!','success'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
+  showToast('Trip generated!','success'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false;
   loadTripsPreview();
-  document.getElementById('trips-preview').scrollIntoView({behavior:'smooth'});
+  // redirect to dashboard with the new trip
+  window.location.href = 'dashboard.html?v=3&trip=' + trip.id;
 });
 
 function toggleCityDropdown() {

@@ -89,6 +89,8 @@
     <button onclick="showView('trips')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7"/></svg><span class="text-[10px]">Trips</span></button>
     <button onclick="showView('plan')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg><span class="text-[10px]">Plan</span></button>
     <button onclick="showView('explore')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg><span class="text-[10px]">Explore</span></button>
+    <button onclick="showView('weather')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg><span class="text-[10px]">Weather</span></button>
+    <button onclick="showView('activities')" class="flex flex-col items-center gap-1 p-2 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg><span class="text-[10px]">Act</span></button>
   </div>
 
   <main class="md:ml-60 pt-[57px] pb-20 md:pb-6 px-4 md:px-6 py-4">
@@ -102,6 +104,7 @@
         <button onclick="showView('plan')" class="btn-primary px-5 py-2.5 rounded-lg text-sm">Plan a Trip</button>
       </div>
       <div id="today-trips-list" class="space-y-3 hidden"></div>
+      <div id="today-itinerary" class="space-y-3 hidden"></div>
     </div>
 
     <div id="view-trips" class="max-w-4xl mx-auto space-y-4 hidden">
@@ -129,7 +132,13 @@
         <div class="grid md:grid-cols-2 gap-3">
           <div><label class="text-sm text-gray-400 mb-1 block">Destination Country</label>
             <select id="plan-destination" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm"><option value="">Select country...</option><option>China</option><option>Japan</option><option>Thailand</option><option>Vietnam</option><option>Singapore</option><option>Malaysia</option></select></div>
-          <div><label class="text-sm text-gray-400 mb-1 block">City</label><input type="text" id="plan-city" placeholder="e.g. Beijing" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 text-sm"></div>
+          <div><label class="text-sm text-gray-400 mb-1 block">City</label>
+            <select id="plan-city" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm">
+              <option value="">Select city...</option>
+              <option>Beijing</option><option>Shanghai</option><option>Chengdu</option><option>Guangzhou</option><option>Shenzhen</option>
+              <option>Xi'an</option><option>Hangzhou</option><option>Guilin</option><option>Zhangjiajie</option><option>Suzhou</option>
+              <option>Hong Kong</option><option>Lijiang</option><option>Huangshan</option><option>Nanjing</option><option>Chongqing</option>
+            </select></div>
         </div>
         <div class="grid md:grid-cols-2 gap-3">
           <div><label class="text-sm text-gray-400 mb-1 block">Start Date</label><input type="date" id="plan-start" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm"></div>
@@ -176,21 +185,21 @@
 
 <script>
 const ACTIVITIES = {
-  Beijing: [{name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'¥40-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'¥60',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'¥35',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'¥30',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'¥200-400',photo:9}],
-  Shanghai: [{name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'¥180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'¥40',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}],
-  Chengdu: [{name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'¥55',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}],
-  Guangzhou: [{name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'¥150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'¥80-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'¥10',photo:7}],
-  Shenzhen: [{name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'¥220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}],
-  "Xi'an": [{name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'¥120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'¥54',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'¥50',photo:7}],
-  Hangzhou: [{name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'¥75',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}],
-  Guilin: [{name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'¥300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'¥90',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'¥75',photo:7}],
-  Zhangjiajie: [{name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'¥225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'¥141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'¥258',photo:8}],
-  Suzhou: [{name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'¥70',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'¥60',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}],
-  "Hong Kong": [{name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'¥150-300',photo:9}],
-  Lijiang: [{name:'Old Town',tags:'History,Food',duration:'Half Day',price:'¥50',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'¥130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'¥65',photo:8}],
-  Huangshan: [{name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'¥190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'¥298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'¥104',photo:8}],
-  Nanjing: [{name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'¥30',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'¥30',photo:7}],
-  Chongqing: [{name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'¥140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'¥100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'¥2000+',photo:8}]
+  Beijing: [{name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'\u00a540-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'\u00a560',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'\u00a535',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'\u00a530',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'\u00a5200-400',photo:9}],
+  Shanghai: [{name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'\u00a540',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}],
+  Chengdu: [{name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'\u00a555',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}],
+  Guangzhou: [{name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'\u00a580-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'\u00a510',photo:7}],
+  Shenzhen: [{name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'\u00a5220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}],
+  "Xi'an": [{name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'\u00a5120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'\u00a554',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'\u00a550',photo:7}],
+  Hangzhou: [{name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'\u00a575',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}],
+  Guilin: [{name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'\u00a5300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'\u00a590',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'\u00a575',photo:7}],
+  Zhangjiajie: [{name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'\u00a5141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'\u00a5258',photo:8}],
+  Suzhou: [{name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'\u00a570',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'\u00a560',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}],
+  "Hong Kong": [{name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'\u00a5150-300',photo:9}],
+  Lijiang: [{name:'Old Town',tags:'History,Food',duration:'Half Day',price:'\u00a550',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a565',photo:8}],
+  Huangshan: [{name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'\u00a5190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'\u00a5298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'\u00a5104',photo:8}],
+  Nanjing: [{name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'\u00a530',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'\u00a530',photo:7}],
+  Chongqing: [{name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'\u00a5140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'\u00a52000+',photo:8}]
 };
 
 const WEATHER = {
@@ -222,9 +231,12 @@ function generateItinerary(city, start, end, interests) {
   const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1);
   const itin = [];
   for (let d = 0; d < days; d++) {
-    const dayActs = acts.filter(a => interests.some(i => a.tags.includes(i))).slice(0,3);
-    if (dayActs.length === 0) dayActs.push(...acts.slice(0,3));
-    dayActs.forEach((a, idx) => {
+    let dayActs = acts.filter(a => interests.some(i => a.tags.includes(i)));
+    if (dayActs.length === 0) dayActs = acts.slice();
+    const offset = (d * 2) % Math.max(1, dayActs.length);
+    const rotated = dayActs.slice(offset).concat(dayActs.slice(0, offset));
+    const picks = rotated.slice(0, 3);
+    picks.forEach((a, idx) => {
       itin.push({ title: a.name, time: ['09:00','14:00','19:00'][idx] || '10:00', completed: false, day: d+1, id: 'item_' + Date.now() + '_' + idx + '_' + d });
     });
   }
@@ -238,11 +250,31 @@ function showToast(msg, type) {
 
 function formatDate(d) { return d ? new Date(d).toLocaleDateString() : ''; }
 
+function dateStr(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  return dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+}
+
+function isDateInRange(date, start, end) {
+  const d = new Date(dateStr(date));
+  const s = new Date(start);
+  const e = new Date(end);
+  return d >= s && d <= e;
+}
+
+function todayStr() {
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+}
+
 // ===================== NAVIGATION =====================
 
 function showView(view) {
   document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
-  document.getElementById('view-' + view).classList.remove('hidden');
+  const target = document.getElementById('view-' + view);
+  if (target) target.classList.remove('hidden');
+
   document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
   const nav = document.getElementById('nav-' + view);
   if (nav) nav.classList.add('active');
@@ -250,6 +282,66 @@ function showView(view) {
   if (view === 'trips') loadTrips();
   if (view === 'activities') loadActivities();
   if (view === 'explore') loadCities();
+  if (view === 'today') loadToday();
+}
+
+// ===================== TODAY =====================
+
+function loadToday() {
+  const trips = getTrips();
+  const todayList = document.getElementById('today-trips-list');
+  const todayItin = document.getElementById('today-itinerary');
+  const todayEmpty = document.getElementById('today-empty');
+  const now = todayStr();
+
+  const activeTrips = trips.filter(t => isDateInRange(now, t.start_date, t.end_date));
+
+  if (activeTrips.length === 0) {
+    todayList.classList.add('hidden');
+    todayItin.classList.add('hidden');
+    todayEmpty.classList.remove('hidden');
+    return;
+  }
+
+  todayEmpty.classList.add('hidden');
+  todayList.classList.remove('hidden');
+  todayItin.classList.remove('hidden');
+
+  todayList.innerHTML = activeTrips.map(t => `
+    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="openTrip('${t.id}')">
+      <div class="flex items-center justify-between"><h3 class="font-semibold">${t.title}</h3><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span></div>
+      <p class="text-sm text-gray-400 mt-1">${t.city} \u00b7 ${formatDate(t.start_date)} - ${formatDate(t.end_date)}</p>
+    </div>`).join('');
+
+  // Show itinerary items for today
+  let html = '';
+  activeTrips.forEach(t => {
+    const items = (t.itinerary || []).filter(i => i.day === getDayNumber(t.start_date, now));
+    if (items.length > 0) {
+      html += `<div class="bg-dark-lighter rounded-xl p-4 border border-white/5 mb-3"><h3 class="font-semibold mb-2">${t.city} - Day ${getDayNumber(t.start_date, now)}</h3>`;
+      html += items.map(item => `
+        <div class="itinerary-item ${item.completed ? 'completed' : ''}">
+          <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleTodayItem('${t.id}', '${item.id}')" class="w-4 h-4 accent-emerald-500">
+          <div class="flex-1"><p class="text-sm font-medium">${item.title}</p><p class="text-xs text-gray-400">${item.time || ''}</p></div>
+        </div>`).join('');
+      html += '</div>';
+    }
+  });
+  todayItin.innerHTML = html || '<div class="text-center text-gray-500 py-6 text-sm">No activities planned for today.</div>';
+}
+
+function getDayNumber(start, current) {
+  const s = new Date(start);
+  const c = new Date(current);
+  return Math.max(1, Math.ceil((c - s) / 86400000) + 1);
+}
+
+function toggleTodayItem(tripId, itemId) {
+  const trips = getTrips();
+  const trip = trips.find(t => t.id === tripId);
+  if (!trip || !trip.itinerary) return;
+  const item = trip.itinerary.find(i => i.id === itemId);
+  if (item) { item.completed = !item.completed; saveTrips(trips); loadToday(); }
 }
 
 // ===================== TRIPS =====================
@@ -259,32 +351,19 @@ let currentTripItinerary = [];
 
 async function loadTrips() {
   const container = document.getElementById('trips-grid');
-  const todayList = document.getElementById('today-trips-list');
-  const todayEmpty = document.getElementById('today-empty');
   const trips = getTrips();
 
   if (trips.length === 0) {
     container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-10">No trips yet. Click "New Trip" to start planning.</div>';
-    todayList.classList.add('hidden');
-    todayEmpty.classList.remove('hidden');
     return;
   }
-
-  todayEmpty.classList.add('hidden');
-  todayList.classList.remove('hidden');
-
-  todayList.innerHTML = trips.slice(0, 3).map(t => `
-    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="openTrip('${t.id}')">
-      <div class="flex items-center justify-between"><h3 class="font-semibold">${t.title}</h3><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span></div>
-      <p class="text-sm text-gray-400 mt-1">${t.city} · ${formatDate(t.start_date)} - ${formatDate(t.end_date)}</p>
-    </div>`).join('');
 
   container.innerHTML = trips.map(t => `
     <div class="bg-dark-lighter rounded-xl border border-white/5 overflow-hidden card-hover cursor-pointer" onclick="openTrip('${t.id}')">
       <div class="h-32 bg-gradient-to-r from-emerald-900/50 to-blue-900/50 relative"></div>
       <div class="p-5">
         <div class="flex items-center justify-between mb-2"><h3 class="font-semibold text-lg">${t.title}</h3><span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">${t.status}</span></div>
-        <p class="text-sm text-gray-400 mb-3">${t.city || ''} · ${formatDate(t.start_date)} - ${formatDate(t.end_date)}</p>
+        <p class="text-sm text-gray-400 mb-3">${t.city || ''} \u00b7 ${formatDate(t.start_date)} - ${formatDate(t.end_date)}</p>
         <div class="flex flex-wrap gap-1">${(t.interests || []).map(i => `<span class="text-[10px] bg-white/5 px-2 py-1 rounded-full">${i}</span>`).join('')}</div>
         <button onclick="event.stopPropagation(); deleteTrip('${t.id}')" class="mt-3 text-xs text-red-400 hover:text-red-300">Delete Trip</button>
       </div>
@@ -324,7 +403,7 @@ function renderItineraryList() {
   container.innerHTML = currentTripItinerary.map((item, i) => `
     <div class="itinerary-item ${item.completed ? 'completed' : ''}">
       <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleItineraryItem(${i})" class="w-4 h-4 accent-emerald-500">
-      <div class="flex-1"><p class="text-sm font-medium">${item.title}</p><p class="text-xs text-gray-400">${item.time || ''}</p></div>
+      <div class="flex-1"><p class="text-sm font-medium">${item.title}</p><p class="text-xs text-gray-400">${item.time || ''} ${item.day ? '\u00b7 Day ' + item.day : ''}</p></div>
       <button onclick="deleteItineraryItem(${i})" class="text-xs text-red-400 hover:text-red-300">Delete</button>
     </div>`).join('');
 }
@@ -391,7 +470,9 @@ function createTrip(e) {
   const start = document.getElementById('plan-start').value;
   const end = document.getElementById('plan-end').value;
 
-  if (!dest || !city) { showToast('Please select a destination and enter a city', 'error'); btn.textContent = 'Create Trip'; btn.disabled = false; return; }
+  if (!dest || !city) { showToast('Please select a destination and city', 'error'); btn.textContent = 'Create Trip'; btn.disabled = false; return; }
+  if (!start || !end) { showToast('Please select start and end dates', 'error'); btn.textContent = 'Create Trip'; btn.disabled = false; return; }
+  if (new Date(start) > new Date(end)) { showToast('Start date must be before end date', 'error'); btn.textContent = 'Create Trip'; btn.disabled = false; return; }
 
   const body = {
     id: genId(), title: city + ' Trip', destination: dest, city: city,
@@ -424,7 +505,7 @@ function loadCities() {
     <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 card-hover cursor-pointer" onclick="showCity('${city}')">
       <h3 class="font-semibold mb-1">${city}</h3>
       <p class="text-sm text-gray-400">${acts} activities</p>
-      <p class="text-xs text-emerald-400 mt-2">${w.temperature || '--'}°C · ${w.condition || ''}</p>
+      <p class="text-xs text-emerald-400 mt-2">${w.temperature || '--'}\u00b0C \u00b7 ${w.condition || ''}</p>
     </div>`;
   }).join('');
 }
@@ -449,7 +530,7 @@ function loadWeatherForCity() {
     <div class="bg-dark-lighter rounded-xl p-5 border border-white/5 mb-4">
       <h2 class="text-xl font-bold mb-4">${city}</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-white/5 rounded-xl p-4 text-center"><p class="text-2xl font-bold">${w.temperature}°C</p><p class="text-xs text-gray-400 mt-1">Temperature</p></div>
+        <div class="bg-white/5 rounded-xl p-4 text-center"><p class="text-2xl font-bold">${w.temperature}\u00b0C</p><p class="text-xs text-gray-400 mt-1">Temperature</p></div>
         <div class="bg-white/5 rounded-xl p-4 text-center"><p class="text-2xl font-bold">${w.precipitation}%</p><p class="text-xs text-gray-400 mt-1">Rain</p></div>
         <div class="bg-white/5 rounded-xl p-4 text-center"><p class="text-2xl font-bold">${w.wind_speed}</p><p class="text-xs text-gray-400 mt-1">Wind (km/h)</p></div>
         <div class="bg-white/5 rounded-xl p-4 text-center"><p class="text-2xl font-bold">${w.visibility}</p><p class="text-xs text-gray-400 mt-1">Visibility (km)</p></div>
@@ -460,7 +541,7 @@ function loadWeatherForCity() {
     <div class="grid md:grid-cols-2 gap-3">${(ACTIVITIES[city] || []).map(a => `
       <div class="bg-dark-lighter rounded-xl p-4 border border-white/5">
         <div class="flex items-center justify-between"><h4 class="font-medium">${a.name}</h4><span class="text-emerald-400 text-sm">${a.price}</span></div>
-        <p class="text-xs text-gray-400 mt-1">${a.duration} · ${a.tags}</p>
+        <p class="text-xs text-gray-400 mt-1">${a.duration} \u00b7 ${a.tags}</p>
       </div>`).join('')}</div>`;
 }
 
@@ -479,7 +560,7 @@ function loadActivities() {
   container.innerHTML = allActs.map(a => `
     <div class="bg-dark-lighter rounded-xl p-4 border border-white/5">
       <div class="flex items-center justify-between"><h4 class="font-medium">${a.name}</h4><span class="text-emerald-400 text-sm">${a.price}</span></div>
-      <p class="text-xs text-gray-400 mt-1">${a.city} · ${a.duration}</p>
+      <p class="text-xs text-gray-400 mt-1">${a.city} \u00b7 ${a.duration}</p>
       <div class="flex flex-wrap gap-1 mt-2">${a.tags.split(',').map(t => `<span class="text-[10px] bg-white/5 px-2 py-0.5 rounded-full">${t}</span>`).join('')}</div>
     </div>`).join('');
 }
@@ -494,7 +575,7 @@ function filterActivities() {
   container.innerHTML = acts.map(a => `
     <div class="bg-dark-lighter rounded-xl p-4 border border-white/5">
       <div class="flex items-center justify-between"><h4 class="font-medium">${a.name}</h4><span class="text-emerald-400 text-sm">${a.price}</span></div>
-      <p class="text-xs text-gray-400 mt-1">${a.city} · ${a.duration}</p>
+      <p class="text-xs text-gray-400 mt-1">${a.city} \u00b7 ${a.duration}</p>
       <div class="flex flex-wrap gap-1 mt-2">${a.tags.split(',').map(t => `<span class="text-[10px] bg-white/5 px-2 py-0.5 rounded-full">${t}</span>`).join('')}</div>
     </div>`).join('');
 }
@@ -503,6 +584,7 @@ function filterActivities() {
 
 document.addEventListener('DOMContentLoaded', () => {
   showView('today');
+  loadToday();
   document.getElementById('plan-form').addEventListener('submit', createTrip);
 
   const params = new URLSearchParams(window.location.search);
