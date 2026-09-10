@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>TripPilot - AI Trip Planner</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -28,6 +31,8 @@
     .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
     input:focus, select:focus { outline: none; border-color: #10b981; }
+    select option { background: #111815; color: white; }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); background-position: right 0.7rem center; background-repeat: no-repeat; background-size: 1.2em; appearance: none; -webkit-appearance: none; padding-right: 2.5rem; }
     .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: #10b981; border-radius: 50%; width: 18px; height: 18px; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; padding: 12px 20px; border-radius: 12px; font-size: 14px; animation: toastIn 0.3s ease-out; }
@@ -38,30 +43,25 @@
 </head>
 <body class="min-h-screen" style="background: linear-gradient(135deg, #0a0f0e 0%, #0d1f1a 40%, #111815 100%);">
 
-  <!-- Nav -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2">
+      <a href="./" class="flex items-center gap-2">
         <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
         <span class="text-lg font-semibold">TripPilot</span>
       </a>
       <div class="flex items-center gap-3">
-        <a href="dashboard.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
+        <a href="dashboard.html?v=3" class="btn-primary text-sm px-4 py-2 rounded-lg">Plan a Trip</a>
       </div>
     </div>
   </nav>
 
-  <!-- Main Content -->
   <main class="pt-24 pb-12 px-4">
     <div class="max-w-2xl mx-auto">
-
-      <!-- Hero -->
       <div class="text-center mb-10">
         <h1 class="text-4xl md:text-5xl font-bold mb-3">Plan Your Trip<br><span class="text-emerald-400">Automatically</span></h1>
         <p class="text-gray-400 text-lg">Tell us where and when. We'll build your day-by-day itinerary with real activities, restaurants, and weather-aware planning.</p>
       </div>
 
-      <!-- Trip Generator Form -->
       <div class="bg-dark-lighter rounded-2xl p-6 md:p-8 border border-white/5">
         <h2 class="text-lg font-semibold mb-5 flex items-center gap-2">
           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -70,50 +70,42 @@
         <form id="generate-form" class="space-y-4">
           <div>
             <label class="text-sm text-gray-400 mb-1 block">Destination City</label>
-            <select id="gen-city" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm">
-              <option value="">Choose a city...</option>
-              <option value="Beijing">Beijing</option>
-              <option value="Shanghai">Shanghai</option>
-              <option value="Chengdu">Chengdu</option>
-              <option value="Guangzhou">Guangzhou</option>
-              <option value="Shenzhen">Shenzhen</option>
-              <option value="Xi'an">Xi'an</option>
-              <option value="Hangzhou">Hangzhou</option>
-              <option value="Guilin">Guilin</option>
-              <option value="Zhangjiajie">Zhangjiajie</option>
-              <option value="Suzhou">Suzhou</option>
-              <option value="Hong Kong">Hong Kong</option>
-              <option value="Lijiang">Lijiang</option>
-              <option value="Huangshan">Huangshan</option>
-              <option value="Nanjing">Nanjing</option>
-              <option value="Chongqing">Chongqing</option>
-            </select>
+            <div class="relative" id="city-dropdown-wrapper">
+              <button type="button" id="city-dropdown-btn" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-left text-white text-sm flex items-center justify-between" onclick="toggleCityDropdown()">
+                <span id="city-selected">Choose a city...</span>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div id="city-dropdown" class="hidden absolute z-50 w-full mt-1 bg-[#111815] border border-white/10 rounded-lg max-h-60 overflow-y-auto shadow-xl">
+                <div class="px-4 py-2 text-sm text-gray-400 hover:bg-white/5 cursor-pointer" onclick="selectCity('')">Choose a city...</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Beijing')">Beijing</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Shanghai')">Shanghai</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Chengdu')">Chengdu</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Guangzhou')">Guangzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Shenzhen')">Shenzhen</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Xi\'an')">Xi'an</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Hangzhou')">Hangzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Guilin')">Guilin</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Zhangjiajie')">Zhangjiajie</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Suzhou')">Suzhou</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Hong Kong')">Hong Kong</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Lijiang')">Lijiang</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Huangshan')">Huangshan</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Nanjing')">Nanjing</div>
+                <div class="px-4 py-2 text-sm text-white hover:bg-white/5 cursor-pointer" onclick="selectCity('Chongqing')">Chongqing</div>
+              </div>
+              <input type="hidden" id="gen-city" required>
+            </div>
           </div>
           <div class="grid md:grid-cols-2 gap-3">
-            <div>
-              <label class="text-sm text-gray-400 mb-1 block">Start Date</label>
-              <input type="date" id="gen-start" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm">
-            </div>
-            <div>
-              <label class="text-sm text-gray-400 mb-1 block">End Date</label>
-              <input type="date" id="gen-end" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm">
-            </div>
+            <div><label class="text-sm text-gray-400 mb-1 block">Start Date</label><input type="date" id="gen-start" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"></div>
+            <div><label class="text-sm text-gray-400 mb-1 block">End Date</label><input type="date" id="gen-end" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm"></div>
           </div>
           <div>
             <label class="text-sm text-gray-400 mb-1 block">Travellers</label>
             <div class="grid grid-cols-3 gap-2">
-              <div class="bg-white/5 rounded-lg p-2 text-center">
-                <input type="number" id="gen-adults" value="2" min="1" class="w-full bg-transparent text-xl font-bold text-center text-white">
-                <p class="text-xs text-gray-400">Adults</p>
-              </div>
-              <div class="bg-white/5 rounded-lg p-2 text-center">
-                <input type="number" id="gen-teens" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white">
-                <p class="text-xs text-gray-400">Teens</p>
-              </div>
-              <div class="bg-white/5 rounded-lg p-2 text-center">
-                <input type="number" id="gen-children" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white">
-                <p class="text-xs text-gray-400">Kids</p>
-              </div>
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-adults" value="2" min="1" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Adults</p></div>
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-teens" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Teens</p></div>
+              <div class="bg-white/5 rounded-lg p-2 text-center"><input type="number" id="gen-children" value="0" min="0" class="w-full bg-transparent text-xl font-bold text-center text-white"><p class="text-xs text-gray-400">Kids</p></div>
             </div>
           </div>
           <div>
@@ -127,23 +119,18 @@
             </div>
           </div>
           <button type="submit" id="gen-submit" class="w-full btn-primary py-4 rounded-lg text-base">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            Generate My Trip
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip
           </button>
         </form>
       </div>
 
-      <!-- My Trips Preview -->
       <div class="mt-10">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-bold">Your Trips</h2>
-          <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 text-sm">View All</a>
+          <a href="dashboard.html?v=3" class="text-emerald-400 hover:text-emerald-300 text-sm">View All</a>
         </div>
-        <div id="trips-preview" class="space-y-3">
-          <div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>
-        </div>
+        <div id="trips-preview" class="space-y-3"><div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div></div>
       </div>
-
     </div>
   </main>
 
@@ -151,77 +138,163 @@
     <p class="text-sm text-gray-500">TripPilot - AI-powered trip planning for China</p>
   </footer>
 
-  <script>
-    const API_BASE = window.location.origin;
-    let selectedInterests = ['Food', 'Nature', 'History'];
+<script>
+const ACTIVITIES = {
+  Beijing: [
+    {name:'Great Wall of China',tags:'History,Adventure',duration:'Full Day',price:'\u00a540-60',photo:8},{name:'Forbidden City',tags:'History,Culture',duration:'3-4 hours',price:'\u00a560',photo:9},{name:'Temple of Heaven',tags:'History,Nature',duration:'2-3 hours',price:'\u00a535',photo:7},{name:'Summer Palace',tags:'Nature,History',duration:'Half Day',price:'\u00a530',photo:8},{name:'Peking Duck Dinner',tags:'Food',duration:'2 hours',price:'\u00a5200-400',photo:9}
+  ],
+  Shanghai: [
+    {name:'The Bund',tags:'History,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Oriental Pearl Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5180',photo:8},{name:'Yu Garden',tags:'History,Nature',duration:'2 hours',price:'\u00a540',photo:7},{name:'Nanjing Road',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:7},{name:'French Concession',tags:'Food,History',duration:'Half Day',price:'Free',photo:8}
+  ],
+  Chengdu: [
+    {name:'Panda Base',tags:'Nature',duration:'3-4 hours',price:'\u00a555',photo:9},{name:'Jinli Ancient Street',tags:'Food,History',duration:'2 hours',price:'Free',photo:7},{name:'Wenshu Temple',tags:'History,Culture',duration:'1-2 hours',price:'Free',photo:7},{name:'Hot Pot Experience',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'People\'s Park',tags:'Nature',duration:'1-2 hours',price:'Free',photo:6}
+  ],
+  Guangzhou: [
+    {name:'Canton Tower',tags:'Adventure',duration:'2-3 hours',price:'\u00a5150',photo:8},{name:'Shamian Island',tags:'History',duration:'2 hours',price:'Free',photo:7},{name:'Dim Sum Breakfast',tags:'Food',duration:'2 hours',price:'\u00a580-150',photo:9},{name:'Chen Clan Ancestral Hall',tags:'History,Culture',duration:'2 hours',price:'\u00a510',photo:7}
+  ],
+  Shenzhen: [
+    {name:'Window of the World',tags:'History,Adventure',duration:'Full Day',price:'\u00a5220',photo:8},{name:'Dameisha Beach',tags:'Nature',duration:'Half Day',price:'Free',photo:7},{name:'Dongmen Pedestrian Street',tags:'Shopping,Food',duration:'3 hours',price:'Free',photo:6}
+  ],
+  "Xi'an": [
+    {name:'Terracotta Warriors',tags:'History',duration:'3-4 hours',price:'\u00a5120',photo:9},{name:'City Wall',tags:'History,Adventure',duration:'2-3 hours',price:'\u00a554',photo:8},{name:'Muslim Quarter',tags:'Food',duration:'2 hours',price:'Free',photo:8},{name:'Big Wild Goose Pagoda',tags:'History,Culture',duration:'1-2 hours',price:'\u00a550',photo:7}
+  ],
+  Hangzhou: [
+    {name:'West Lake',tags:'Nature',duration:'Half Day',price:'Free',photo:9},{name:'Lingyin Temple',tags:'History,Culture',duration:'2-3 hours',price:'\u00a575',photo:7},{name:'Longjing Tea Village',tags:'Nature,Food',duration:'Half Day',price:'Free',photo:8},{name:'Hefang Street',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:7}
+  ],
+  Guilin: [
+    {name:'Li River Cruise',tags:'Nature',duration:'4-5 hours',price:'\u00a5300-500',photo:9},{name:'Reed Flute Cave',tags:'Nature',duration:'1-2 hours',price:'\u00a590',photo:8},{name:'Elephant Trunk Hill',tags:'Nature',duration:'1 hour',price:'\u00a575',photo:7}
+  ],
+  Zhangjiajie: [
+    {name:'Avatar Mountains',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5225',photo:9},{name:'Glass Bridge',tags:'Adventure',duration:'2 hours',price:'\u00a5141',photo:8},{name:'Tianmen Mountain',tags:'Nature,Adventure',duration:'Half Day',price:'\u00a5258',photo:8}
+  ],
+  Suzhou: [
+    {name:'Humble Administrator\'s Garden',tags:'Nature,History',duration:'2-3 hours',price:'\u00a570',photo:8},{name:'Tiger Hill',tags:'History,Nature',duration:'2 hours',price:'\u00a560',photo:7},{name:'Pingjiang Road',tags:'Food,History',duration:'2 hours',price:'Free',photo:7}
+  ],
+  "Hong Kong": [
+    {name:'Victoria Peak',tags:'Nature,Adventure',duration:'2-3 hours',price:'Free',photo:9},{name:'Temple Street Night Market',tags:'Food,Shopping',duration:'2 hours',price:'Free',photo:8},{name:'Tian Tan Buddha',tags:'History,Culture',duration:'Half Day',price:'Free',photo:8},{name:'Dim Sum',tags:'Food',duration:'2 hours',price:'\u00a5150-300',photo:9}
+  ],
+  Lijiang: [
+    {name:'Old Town',tags:'History,Food',duration:'Half Day',price:'\u00a550',photo:8},{name:'Jade Dragon Snow Mountain',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a5130',photo:9},{name:'Tiger Leaping Gorge',tags:'Nature,Adventure',duration:'Full Day',price:'\u00a565',photo:8}
+  ],
+  Huangshan: [
+    {name:'Yellow Mountain',tags:'Nature,Adventure',duration:'1-2 days',price:'\u00a5190',photo:9},{name:'Hot Springs',tags:'Nature',duration:'2 hours',price:'\u00a5298',photo:7},{name:'Hongcun Village',tags:'History,Nature',duration:'Half Day',price:'\u00a5104',photo:8}
+  ],
+  Nanjing: [
+    {name:'Sun Yat-sen Mausoleum',tags:'History',duration:'2-3 hours',price:'Free',photo:8},{name:'Confucius Temple',tags:'History,Food',duration:'2 hours',price:'\u00a530',photo:7},{name:'Nanjing City Wall',tags:'History,Adventure',duration:'2 hours',price:'\u00a530',photo:7}
+  ],
+  Chongqing: [
+    {name:'Hongya Cave',tags:'History,Food',duration:'2 hours',price:'Free',photo:8},{name:'Dazu Rock Carvings',tags:'History,Culture',duration:'Half Day',price:'\u00a5140',photo:8},{name:'Hot Pot',tags:'Food',duration:'2 hours',price:'\u00a5100-200',photo:9},{name:'Yangtze River Cruise',tags:'Nature',duration:'3-4 days',price:'\u00a52000+',photo:8}
+  ]
+};
 
-    // Interest tags
-    document.querySelectorAll('.interest-tag').forEach(tag => {
-      tag.addEventListener('click', function() {
-        const t = this.dataset.tag;
-        const idx = selectedInterests.indexOf(t);
-        if (idx > -1) { selectedInterests.splice(idx, 1); this.classList.remove('bg-emerald-500/20', 'text-emerald-400'); this.classList.add('bg-white/5', 'text-gray-400'); }
-        else { selectedInterests.push(t); this.classList.remove('bg-white/5', 'text-gray-400'); this.classList.add('bg-emerald-500/20', 'text-emerald-400'); }
-      });
+const WEATHER = {
+  Beijing: {temperature:22,precipitation:10,wind_speed:12,visibility:10,condition:'Sunny'},
+  Shanghai: {temperature:26,precipitation:30,wind_speed:15,visibility:8,condition:'Partly Cloudy'},
+  Chengdu: {temperature:24,precipitation:45,wind_speed:8,visibility:7,condition:'Cloudy'},
+  Guangzhou: {temperature:30,precipitation:60,wind_speed:10,visibility:9,condition:'Humid'},
+  Shenzhen: {temperature:31,precipitation:55,wind_speed:12,visibility:9,condition:'Humid'},
+  "Xi'an": {temperature:23,precipitation:15,wind_speed:10,visibility:9,condition:'Sunny'},
+  Hangzhou: {temperature:25,precipitation:35,wind_speed:10,visibility:8,condition:'Partly Cloudy'},
+  Guilin: {temperature:28,precipitation:40,wind_speed:8,visibility:8,condition:'Partly Cloudy'},
+  Zhangjiajie: {temperature:22,precipitation:30,wind_speed:10,visibility:7,condition:'Cloudy'},
+  Suzhou: {temperature:25,precipitation:25,wind_speed:10,visibility:8,condition:'Partly Cloudy'},
+  "Hong Kong": {temperature:29,precipitation:50,wind_speed:18,visibility:8,condition:'Humid'},
+  Lijiang: {temperature:18,precipitation:20,wind_speed:8,visibility:10,condition:'Sunny'},
+  Huangshan: {temperature:16,precipitation:35,wind_speed:15,visibility:6,condition:'Foggy'},
+  Nanjing: {temperature:24,precipitation:20,wind_speed:10,visibility:9,condition:'Sunny'},
+  Chongqing: {temperature:27,precipitation:40,wind_speed:8,visibility:6,condition:'Foggy'}
+};
+
+function getTrips() { return JSON.parse(localStorage.getItem('tp_trips') || '[]'); }
+function saveTrips(trips) { localStorage.setItem('tp_trips', JSON.stringify(trips)); }
+function genId() { return 'trip_' + Date.now() + '_' + Math.random().toString(36).substr(2,9); }
+
+function generateItinerary(city, start, end, interests) {
+  const acts = ACTIVITIES[city] || [];
+  const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1);
+  const itin = [];
+  for (let d = 0; d < days; d++) {
+    let dayActs = acts.filter(a => interests.some(i => a.tags.includes(i)));
+    if (dayActs.length === 0) dayActs = acts.slice();
+    // rotate starting position per day for variety
+    const offset = (d * 2) % Math.max(1, dayActs.length);
+    const rotated = dayActs.slice(offset).concat(dayActs.slice(0, offset));
+    const picks = rotated.slice(0, 3);
+    picks.forEach((a, idx) => {
+      itin.push({ title: a.name, time: ['09:00','14:00','19:00'][idx] || '10:00', completed: false, day: d+1, id: 'item_' + Date.now() + '_' + idx + '_' + d });
     });
+  }
+  return itin;
+}
 
-    function showToast(msg, type) {
-      const existing = document.querySelector('.toast'); if (existing) existing.remove();
-      const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
-    }
+let selectedInterests = ['Food','Nature','History'];
+document.querySelectorAll('.interest-tag').forEach(tag => {
+  tag.addEventListener('click', function() {
+    const t = this.dataset.tag;
+    const idx = selectedInterests.indexOf(t);
+    if (idx > -1) { selectedInterests.splice(idx, 1); this.classList.remove('bg-emerald-500/20','text-emerald-400'); this.classList.add('bg-white/5','text-gray-400'); }
+    else { selectedInterests.push(t); this.classList.remove('bg-white/5','text-gray-400'); this.classList.add('bg-emerald-500/20','text-emerald-400'); }
+  });
+});
 
-    // Generate trip
-    document.getElementById('generate-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('gen-submit');
-      btn.innerHTML = '<span class="spinner mr-2"></span>Generating your trip...'; btn.disabled = true;
+function showToast(msg, type) {
+  const existing = document.querySelector('.toast'); if (existing) existing.remove();
+  const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
 
-      const city = document.getElementById('gen-city').value;
-      const start = document.getElementById('gen-start').value;
-      const end = document.getElementById('gen-end').value;
+function loadTripsPreview() {
+  const container = document.getElementById('trips-preview');
+  const trips = getTrips();
+  if (trips.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>'; return; }
+  container.innerHTML = trips.slice(0,3).map(t => `
+    <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="window.location.href='dashboard.html?v=3&trip=${t.id}'">
+      <div class="flex items-center justify-between"><h3 class="font-semibold">${t.title}</h3><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span></div>
+      <p class="text-sm text-gray-400 mt-1">${t.city} \u00b7 ${new Date(t.start_date).toLocaleDateString()} - ${new Date(t.end_date).toLocaleDateString()}</p>
+    </div>`).join('');
+}
 
-      if (!city || !start || !end) { showToast('Please fill in all fields', 'error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
+document.getElementById('generate-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('gen-submit');
+  btn.innerHTML = '<span class="spinner mr-2"></span>Generating your trip...'; btn.disabled = true;
+  const city = document.getElementById('gen-city').value;
+  const start = document.getElementById('gen-start').value;
+  const end = document.getElementById('gen-end').value;
+  if (!city || !start || !end) { showToast('Please fill in all fields','error'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false; return; }
+  if (new Date(start) > new Date(end)) { showToast('Start date must be before end date','error'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false; return; }
 
-      const body = {
-        city, start_date: start, end_date: end,
-        travellers: { adults: parseInt(document.getElementById('gen-adults').value) || 1, teens: parseInt(document.getElementById('gen-teens').value) || 0, children: parseInt(document.getElementById('gen-children').value) || 0 },
-        interests: selectedInterests
-      };
+  const trip = {
+    id: genId(), title: city + ' Trip', city, destination: 'China',
+    start_date: start, end_date: end,
+    travellers: { adults: parseInt(document.getElementById('gen-adults').value)||1, teens: parseInt(document.getElementById('gen-teens').value)||0, children: parseInt(document.getElementById('gen-children').value)||0 },
+    interests: [...selectedInterests], status: 'planning', created_at: new Date().toISOString(),
+    itinerary: generateItinerary(city, start, end, selectedInterests)
+  };
+  const trips = getTrips(); trips.unshift(trip); saveTrips(trips);
+  showToast('Trip generated!','success'); btn.innerHTML = '<svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Generate My Trip'; btn.disabled = false;
+  loadTripsPreview();
+  // redirect to dashboard with the new trip
+  window.location.href = 'dashboard.html?v=3&trip=' + trip.id;
+});
 
-      try {
-        const res = await fetch(`${API_BASE}/api/trips/generate`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-        });
-        if (!res.ok) { showToast('Failed to generate trip', 'error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; return; }
-        const trip = await res.json();
-        showToast('Trip generated!', 'success');
-        btn.innerHTML = 'Generate My Trip'; btn.disabled = false;
-        loadTripsPreview();
-        // Scroll to trips
-        document.getElementById('trips-preview').scrollIntoView({ behavior: 'smooth' });
-      } catch (err) { showToast('Network error', 'error'); btn.innerHTML = 'Generate My Trip'; btn.disabled = false; }
-    });
+function toggleCityDropdown() {
+  const dd = document.getElementById('city-dropdown');
+  dd.classList.toggle('hidden');
+}
+function selectCity(city) {
+  document.getElementById('gen-city').value = city;
+  document.getElementById('city-selected').textContent = city || 'Choose a city...';
+  document.getElementById('city-dropdown').classList.add('hidden');
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('city-dropdown-wrapper');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('city-dropdown').classList.add('hidden');
+  }
+});
 
-    async function loadTripsPreview() {
-      const container = document.getElementById('trips-preview');
-      try {
-        const res = await fetch(`${API_BASE}/api/trips`);
-        if (!res.ok) return;
-        const trips = await res.json();
-        if (trips.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 py-8">No trips yet. Generate one above!</div>'; return; }
-        container.innerHTML = trips.slice(0, 3).map(t => `
-          <div class="bg-dark-lighter rounded-xl p-4 border border-white/5 cursor-pointer card-hover" onclick="window.location.href='dashboard.html?trip=${t.id}'">
-            <div class="flex items-center justify-between">
-              <h3 class="font-semibold">${t.title}</h3>
-              <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">${t.status}</span>
-            </div>
-            <p class="text-sm text-gray-400 mt-1">${t.city} · ${new Date(t.start_date).toLocaleDateString()} - ${new Date(t.end_date).toLocaleDateString()}</p>
-          </div>
-        `).join('');
-      } catch (err) {}
-    }
-
-    loadTripsPreview();
-  </script>
+loadTripsPreview();
+</script>
 </body>
 </html>
+<!-- cache-bust: 1789014529 -->
